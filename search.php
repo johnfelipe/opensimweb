@@ -1,129 +1,47 @@
 <?php
-//error_reporting(0);
+$page_title = "Search";
+define('OSW_IN_SYSTEM', true);
+require_once('inc/header.php');
 /*** *** *** *** *** ***
-* @package OpenSim Search page for viewers
-* @file    osviewersearch.php
-* @start   May 26, 2013
-* @author  Christopher Strachan
-* @license http://www.opensource.org/licenses/gpl-license.php
-* @version 2.1.1
-* @link    http://www.littletech.net
-*** *** *** *** *** ***
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*** *** *** *** *** ***
-* Comments are always before the code they are commenting.
-*** *** *** *** *** ***/
-
-/*** *** *** *** *** ***
-* You are welcome to modify this page all you want and rename it.
-* Bootstrap included in the header of this page to make it look better.
-* This page does relie heavly on bootstrap so please becareful if you remove bootstrap from this page.
-* This page is mainly for the viewers like FireStorm. I did this because im sick and tired of lagency search not working and
-* website search is loading a non functional search page for OSGrid and like to start contributing my skills in php to the OpenSim community.
-* This was orginally designed for my own grid and have changed it to work for other grids.
-* If you dont know php html or have anyone on your dev team that knows it I will be glad to help.
-* Just send me a email to chrisx84@live.ca or chrisx8416@gmail.com
-* Webassest modular is required for the pics to work.
-* OSSearch is also required for this page to get search info from your grid.
-* For this to work on your grid add the following line into your Robust.ini or Robust.HG.ini in the [LoginService] section.
-*** *** *** *** *** ***
 * SearchURL = "http://yourwebsiteaddresshere/ossearch.php?search=[QUERY]"
-*** *** *** *** *** ***
-* The [QUERY] is what is sent to the page if someone searches from the search bar at the top right of most viewers.
 *** *** *** *** *** ***/
-
-// change these to work with your databases
-$osmod = "osmodules";
-$osmain = "opensim";
-
-$dbaddress = "localhost";
-$dbuser = "root";
-$dbpass = "l0v3sux";
-$sitedb = "site";
-
-// grid address and name
-$address = "http://yourdomain.com";
-$grid_name = "Your Grid";
-
-$now = time();
-
-// You can remove these two lines if your using a cms or have your own way to connect to the database.
-$mysqli = new mysqli($dbaddress, $dbuser, $dbpass, $sitedb);
-if (mysqli_connect_errno()) {
-    echo "Connect failed";
-    exit();
-}
-
-global $mysqli;
-
-// your welcome to cut and paste these functions into your own system and modify them.
 
 	function getosuser($FirstName, $LastName) {
-	global $mysqli;
-	global $osmain;
-	$q = $mysqli->query("SELECT * FROM $osmain.useraccounts WHERE FirstName = '$FirstName' AND LastName = '$LastName'");
-	$r = $q->fetch_array(MYSQLI_BOTH);
-	$q->free();
+	$q = $osw->SQL->query("SELECT * FROM $osmain.useraccounts WHERE FirstName = '$FirstName' AND LastName = '$LastName'");
+	$r = $osw->SQL->fetch_array($q);
 	return $r;
 	}
 
 	function uuid2name($uuid) {
-	global $mysqli;
-	global $osmain;
-	$q2 = $mysqli->query("SELECT * FROM $osmain.useraccounts WHERE PrincipalID = '$uuid'");
-	$r2 = $q2->fetch_array(MYSQLI_BOTH);
-	$q2->free();
+	$q2 = $osw->SQL->query("SELECT * FROM $osmain.useraccounts WHERE PrincipalID = '$uuid'");
+	$r2 = $osw->SQL->fetch_array($q2);
 	return $r2;
 	}
 
 	function regionname($ruuid) {
-	global $mysqli;
-	global $osmain;
-	$getregionq = $mysqli->query("SELECT * FROM $osmain.regions WHERE uuid = '$ruuid'");
-	$regionrow = $getregionq->fetch_array(MYSQLI_BOTH);
+	$getregionq = $osw->SQL->query("SELECT * FROM $osmain.regions WHERE uuid = '$ruuid'");
+	$regionrow = $osw->SQL->fetch_array($getregionq);
 	$r3 = $regionrow['regionName'];
-	$getregionq->free();
 	return $r3;
 	}
 
 	function regionip($UUID) {
-	global $mysqli;
-	global $osmain;
-	$getregionq2 = $mysqli->query("SELECT * FROM $osmain.regions WHERE uuid = '$UUID'");
-	$regionrow2 = $getregionq2->fetch_array(MYSQLI_BOTH);
+	$getregionq2 = $osw->SQL->query("SELECT * FROM $osmain.regions WHERE uuid = '$UUID'");
+	$regionrow2 = $osw->SQL->fetch_array($getregionq2);
 	$r4 = $regionrow2['serverIP'];
-	$getregionq2->free();
 	return $r4;
 	}
 
 	function online($uuid) {
-	global $mysqli;
-	global $osmain;
-	$oq = $mysqli->query("SELECT * FROM $osmain.griduser WHERE UserID = '$uuid'");
-	$or = $oq->fetch_array(MYSQLI_BOTH);
+	$oq = $osw->SQL->query("SELECT * FROM $osmain.griduser WHERE UserID = '$uuid'");
+	$or = $osw->SQL->fetch_array($oq);
 	$online = $or['Online'];
-	$oq->free();
 	return $online;
 	}
 
 	function userspersim($sim) {
-	global $mysqli;
-	global $osmain;
-	$simq = $mysqli->query("SELECT * FROM $osmain.presence WHERE RegionID = '$sim'");
-	$count = $simq->num_rows;
-	$simq->close();
+	$simq = $osw->SQL->query("SELECT * FROM $osmain.presence WHERE RegionID = '$sim'");
+	$count = $osw->SQL->num_rows($simq);
 	return $count;
 	}
 
@@ -175,36 +93,14 @@ global $mysqli;
 	return $r;
 	}
 
-// only mess with this function if you know wtf your doing.
-// screwing this up could (WILL) result in a hackable websearch page.
-function sqlprotection ($s) {
-global $mysqli;
-$s = htmlspecialchars(stripslashes($s));
-$s = rawurlencode($s);
-$s = str_replace(array("1=1", ";", "-", "script", "SELECT", "INSERT", "UPDATE", "DELETE", "UNION", "OR"), array("", "", "", "", "", "", "", "", "", ""), $s);
-return $s;
-}
+$search = $osw->Security->make_safe($_GET['search']);
+$search = strtoupper($search);
+$search = strip_tags($search);
+$search = trim ($search);
+$searchlink = $search;
 
-if (isset($_GET['search'])) {
-	$search = sqlprotection($_GET['search']);
-	$search = strtoupper($search);
-	$search = strip_tags($search);
-	$search = trim ($search);
-	$searchlink = $search;
-}else{
-	$search = "";
-	$searchlink = "everything";
-}
-if (isset($_GET['type'])) {
-	$type = $_GET['type'];
-}else{
-	$type = "";
-}
-if (isset($_GET['m'])) {
-	$m = $_GET['m'];
-}else{
-	$m = "";
-}
+$type = $osw->Security->make_safe($_GET['type']);
+$m = $osw->Security->make_safe($_GET['m']);
 
 if ($search) {
 $placeholder = "Searching for $search";
@@ -218,6 +114,7 @@ if (!$m) {
 $m = "1";
 }
 
+// no idea here yet
 $eventcat = "<select name='eventcat'>
 <option value=''></option>
 <option value=''></option>
@@ -229,35 +126,10 @@ $eventcat = "<select name='eventcat'>
 <option value=''></option>
 </select>";
 
-$searchtitle = strtolower($search);
-$ptitle = "Searching for $searchtitle";
-
 $PG = "<span class='label label-success'>PG</span>";
 $MATURE = "<span class='label label-default'>M</span>";
 $ADULT = "<span class='label label-danger'>A</span>";
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
-<title id='titlebar'><?php echo "$grid_name $ptitle"; ?></title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-<!-- Optional bootstrap style -->
-<link href="http://www.littletech.net/css/opensim/bootstrap.css" rel="stylesheet">
-<link href="http://www.littletech.net/css/opensim/bootstrap-theme.css" rel="stylesheet">
-
-</head>
-<body>
-
 <form class="form-inline" method="get" action="" role="form">
 <div class="form-group">
     <input type="text" name="search" class="form-control" id="appendedInputButtons" placeholder="<?php echo $placeholder; ?>">
@@ -333,8 +205,8 @@ echo "Test";
 <?php
 if ($type == "classifieds" || !$type) {
 	echo "<h3>Classifieds</h3>";
-$cq = $mysqli->query("SELECT * FROM $osmod.classifieds WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND creationdate < '$now' AND expirationdate > '$now' AND classifiedflags < '$m' ORDER BY 'creationdate' DESC LIMIT 0,100");
-while ($cn = $cq->fetch_array(MYSQLI_BOTH)) {
+$cq = $osw->SQL->query("SELECT * FROM $osmod.classifieds WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND creationdate < '$now' AND expirationdate > '$now' AND classifiedflags < '$m' ORDER BY 'creationdate' DESC LIMIT 0,100");
+while ($cn = $osw->SQL->fetch_array($cq)) {
 $creatoruuid = $cn['creatoruuid'];
 $creationdate = $cn['creationdate'];
 $expirationdate = $cn['expirationdate'];
@@ -349,17 +221,15 @@ $classifiedflags = $cn['classifiedflags'];
 $creationdate = date("M d Y h:i a T",$creationdate);
 $expirationdate = date("M d Y h:i a T",$expirationdate);
 
-$parq = $mysqli->query("SELECT * FROM $osmod.allparcels WHERE parcelUUID = '$parceluuid'");
-$parrow = $parq->fetch_array(MYSQLI_BOTH);
+$parq = $osw->SQL->query("SELECT * FROM $osmod.allparcels WHERE parcelUUID = '$parceluuid'");
+$parrow = $osw->SQL->fetch_array($parq);
 $regionid = $parrow['regionUUID'];
 $parcelname = $parrow['parcelname'];
 $loc = $parrow['landingpoint'];
-$parq->free();
 
-$simq = $mysqli->query("SELECT * FROM $osmain.regions WHERE uuid = '$regionid'");
-$simr = $simq->fetch_array(MYSQLI_BOTH);
+$simq = $osw->SQL->query("SELECT * FROM $osmain.regions WHERE uuid = '$regionid'");
+$simr = $osw->SQL->fetch_array($simq);
 $sim = $simr['regionName'];
-$simq->free();
 
 if (!$loc) {
 	$locr = "128,128,25";
@@ -407,12 +277,12 @@ $description
   </div>
 ";
 }
-$cq->free();
+
 }
 if ($type == "destinations" || !$type) {
 	echo "<h3>Destinations</h3>";
-$popq = $mysqli->query("SELECT * FROM $osmod.popularplaces WHERE name LIKE '%$search%' AND mature < '$m' ORDER BY `dwell` DESC LIMIT 0,100");
-while ($popn = $popq->fetch_array(MYSQLI_BOTH)) {
+$popq = $osw->SQL->query("SELECT * FROM $osmod.popularplaces WHERE name LIKE '%$search%' AND mature < '$m' ORDER BY `dwell` DESC LIMIT 0,100");
+while ($popn = $osw->SQL->fetch_array($popq)) {
 $parcelUUID = $popn['parcelUUID'];
 $name = $popn['name'];
 $mature = $popn['mature'];
@@ -425,12 +295,12 @@ $mature = "$MATURE";
 $mature = "$ADULT";
 }
 
-$parq = $mysqli->query("SELECT * FROM $osmod.parcels WHERE parcelUUID = '$parcelUUID'");
-$parrow = $parq->fetch_array(MYSQLI_BOTH);
+$parq = $osw->SQL->query("SELECT * FROM $osmod.parcels WHERE parcelUUID = '$parcelUUID'");
+$parrow = $osw->SQL->fetch_array($parq);
 $reguuid = $parrow['regionUUID'];
 $landing = $parrow['landingpoint'];
 $desc = $parrow['description'];
-$parq->free();
+
 $simname = regionname($reguuid);
 $usersonregion = userspersim($reguuid);
 
@@ -453,12 +323,12 @@ $desc<br>
   </div>";
 
 }
-$popq->free();
+
 }
 if ($type == "events" || !$type) {
 	echo "<h3>Events</h3>";
-$evq = $mysqli->query("SELECT * FROM $osmod.events WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND dateUTC > $now AND eventflags < '$m' ORDER BY `dateUTC` LIMIT 0,100");
-while ($evnum = $evq->fetch_array(MYSQLI_BOTH)) {
+$evq = $osw->SQL->query("SELECT * FROM $osmod.events WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND dateUTC > $now AND eventflags < '$m' ORDER BY `dateUTC` LIMIT 0,100");
+while ($evnum = $osw->SQL->fetch_array($evq)) {
 
 $creator = $evnum['creatoruuid'];
 $time = $evnum['dateUTC'];
@@ -503,12 +373,12 @@ $eventinfo<br>
 }
 
 }
-$evq->free();
+
 }
 if ($type == "groups" || !$type) {
 	echo "<h3>Groups</h3>";
-$grpq = $mysqli->query("SELECT * FROM $osmain.os_groups_groups WHERE Name LIKE '%$search%' AND ShowInList = '1' ORDER BY `Name` ASC LIMIT 0,100");
-while ($grpn = $grpq->fetch_array(MYSQLI_BOTH)) {
+$grpq = $osw->SQL->query("SELECT * FROM $osmain.os_groups_groups WHERE Name LIKE '%$search%' AND ShowInList = '1' ORDER BY `Name` ASC LIMIT 0,100");
+while ($grpn = $osw->SQL->fetch_array($grpq)) {
 
 $GroupID = $grpn['GroupID'];
 $Name = $grpn['Name'];
@@ -523,9 +393,8 @@ $FL = uuid2name($FounderID);
 $FName = $FL['FirstName'];
 $LName = $FL['LastName'];
 
-$gmq = $mysqli->query("SELECT * FROM $osmain.os_groups_membership WHERE GroupID = '$GroupID'");
-$gmcount = $gmq->num_rows;
-$gmq->close();
+$gmq = $osw->SQL->query("SELECT * FROM $osmain.os_groups_membership WHERE GroupID = '$GroupID'");
+$gmcount = $osw->SQL->num_rows($gmq);
 
 if ($InsigniaID == "00000000-0000-0000-0000-000000000000" || !$InsigniaID) {
 $pic = "<img src='$address/webassets/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=PNG' class='pull-right' width='75' height='75'>";
@@ -571,12 +440,12 @@ Enrollment: $join
   </div>
 ";
 }
-$grpq->free();
+
 }
 if ($type == "4sale" || !$type) {
 	echo "<h3>For Sale</h3>";
-$forsaleq = $mysqli->query("SELECT * FROM $osmod.parcelsales WHERE parcelname LIKE '%$search%' AND mature < '$m' ORDER BY `saleprice` ASC LIMIT 0,100");
-while ($forsnum = $forsaleq->fetch_array(MYSQLI_BOTH)) {
+$forsaleq = $osw->SQL->query("SELECT * FROM $osmod.parcelsales WHERE parcelname LIKE '%$search%' AND mature < '$m' ORDER BY `saleprice` ASC LIMIT 0,100");
+while ($forsnum = $osw->SQL->fetch_array($forsaleq)) {
 
 $regionUUID = $forsnum['regionUUID'];
 $parcelname = $forsnum['parcelname'];
@@ -608,12 +477,12 @@ echo "  <div class='panel panel-default'>
   </div>
 ";
 }
-$forsaleq->free();
+
 }
 if ($type == "people" || !$type) {
 	echo "<h3>Places</h3>";
-$pplq = $mysqli->query("SELECT * FROM $osmain.useraccounts WHERE FirstName LIKE '%$search%' OR LastName LIKE '%$search%' ORDER BY `Created` ASC LIMIT 0,100");
-while ($pplnum = $pplq->fetch_array(MYSQLI_BOTH)) {
+$pplq = $osw->SQL->query("SELECT * FROM $osmain.useraccounts WHERE FirstName LIKE '%$search%' OR LastName LIKE '%$search%' ORDER BY `Created` ASC LIMIT 0,100");
+while ($pplnum = $osw->SQL->fetch_array($pplq)) {
 
 $uuid = $pplnum['PrincipalID'];
 $sFirst = $pplnum['FirstName'];
@@ -632,8 +501,8 @@ $onoff = "offlinedot.png";
 $onoff = "onlinedot.png";
 }
 
-$profq = $mysqli->query("SELECT * FROM $osmod.userprofile WHERE useruuid = '$uuid' AND profileMaturePublish < '$m'");
-$prow = $profq->fetch_array(MYSQLI_BOTH);
+$profq = $osw->SQL->query("SELECT * FROM $osmod.userprofile WHERE useruuid = '$uuid' AND profileMaturePublish < '$m'");
+$prow = $osw->SQL->fetch_array($profq);
 
 $show = $prow['profileAllowPublish'];
 if ($show == "0") {
@@ -641,8 +510,6 @@ if ($show == "0") {
 $MaturePublish = $prow['profileMaturePublish'];
 $abouttext = $prow['profileAboutText'];
 $fakepic = $prow['profileImage'];
-
-$profq->free();
 
 if ($abouttext) {
 $abouttext = htmlspecialchars_decode($abouttext, ENT_QUOTES);
@@ -690,12 +557,12 @@ $fakelife
 }
 
 }
-$pplq->free();
+
 }
 if ($type == "places" || !$type) {
 	echo "<h3>Places</h3>";
-$placeq = $mysqli->query("SELECT * FROM $osmod.parcels WHERE parcelname LIKE '%$search%' OR description LIKE '%$search%' AND public = 'true' ORDER BY `parcelUUID` ASC LIMIT 0,100");
-while ($placenum = $placeq->fetch_array(MYSQLI_BOTH)) {
+$placeq = $osw->SQL->query("SELECT * FROM $osmod.parcels WHERE parcelname LIKE '%$search%' OR description LIKE '%$search%' AND public = 'true' ORDER BY `parcelUUID` ASC LIMIT 0,100");
+while ($placenum = $osw->SQL->fetch_array($placeq)) {
 
 $regionUUID = $placenum['regionUUID'];
 $parcelname = $placenum['parcelname'];
@@ -748,30 +615,13 @@ $description<br>
 }
 
 }
-$placeq->free();
+
 }
 ?>
 </div>
 </TD>
 </TR>
 </TABLE>
-
-<script type="text/JavaScript">
-$(document).ready(function(){
-	$('.dropdown-toggle').dropdown();
-	$('#tooltip').tooltip('show');
-	$(".accordion").collapse('toggle');
-	$('.collapse').collapse('toggle');
-	$('#modal').modal('toggle');
-	$('.carousel').carousel({interval: 10000});
-	$('#tabs a:first').tab('show');
-});
-</script>
-
-<script src="http://www.littletech.net/js/jquery.js"></script>
-<script src="http://www.littletech.net/js/bootstrap.js"></script>
-</body>
-</html>
 <?php
-$mysqli->close();
+include ('inc/footer.php');
 ?>

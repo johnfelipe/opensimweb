@@ -1,4 +1,3 @@
-
 <script type="text/JavaScript">
 $(document).ready(function(){
 	$('.dropdown-toggle').dropdown();
@@ -11,7 +10,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script src="./js/jquery.js"></script>
-<script src="./js/bootstrap.js"></script>
+<script src="<?php echo $site_address; ?>/js/jquery.js"></script>
+<script src="<?php echo $site_address; ?>/js/bootstrap.js"></script>
 </body>
 </html>

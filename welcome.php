@@ -1,66 +1,13 @@
 <?php
-error_reporting(0); // this is just so stupid errors are not displayed
-/*** *** *** *** *** ***
-* @package OpenSim Search page for viewers
-* @file    oswelcome.php
-* @start   February 04, 2014
-* @author  Christopher Strachan
-* @license http://www.opensource.org/licenses/gpl-license.php
-* @version 1.0.1
-* @link    http://www.littletech.net
-*** *** *** *** *** ***
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*** *** *** *** *** ***
-* Comments are always before the code they are commenting.
-*** *** *** *** *** ***/
-$now = time(); // the time now in seconds since Jan 1 1970.
+$page_title = "Welcome";
+define('OSW_IN_SYSTEM', true);
+require_once('inc/headerless.php');
 
-$grid_name = "The Great Canadian Grid"; // ignore this if using a logo image
-$logoimg = ""; // if there is a image here it will replace $grid_name on the page.
-$twittername = "";
 $dir = "bgimg"; // directory aka folder where your background images aka screenshots will go
 
 $loginuri = "http://login.greatcanadiangrid.ca:8002/"; // This is the address found in Robust.ini for Grid, Opensim.ini for Standalone.
 $ip2robust = "66.23.236.230"; // IP or domain to the robust server. This is used to see if Robust.exe (or OpenSim.exe for Standalone) is online.
 $port2robust = "8002"; // 8002 for Grid Robust.exe, 9000 for Standalone OpenSim.exe
-/*****
-* if you are just forwarding a subdomain to your robust ip to be used as a loginURI,
-* please still put the ip in $ip2robust
-* this is so this script can do a direct check to see if robust is online or not.
-* the ip must be the same as in your robust.ini for LoginURI
-*****/
-
-// Database connect info to the robust database.
-$db_host = "localhost";
-$db_user = "root";
-$db_pass = "l0v3sux";
-$db_port = "3306";
-
-// where accounts are stored. ie, gridusers and useraccounts. Just need these for counting records, nothing else.
-$db_opensim = "opensim";
-// where popularplaces table is. This is for destinations to display on the login screen.
-$db_osmod = "osmodules";
-
-$mysqli = new mysqli($db_host, $db_user, $db_pass, $db_opensim);
-
-if (mysqli_connect_errno()) {
-    echo "Connect failed";
-    exit();
-}
-
-
 
 if ($fp = fsockopen($ip2robust, $port2robust, $errno, $errstr, 1)) {
 	$online = TRUE;
@@ -77,22 +24,26 @@ if ($online == TRUE) {
 	$onoffcolour = "#FA1D2F";
 }
 
-$onlineq = $mysqli->query("SELECT * FROM griduser WHERE Online = 'TRUE'");
-$online = $onlineq->num_rows;
-$onlineq->close();
+$onlineq = $osw->SQL->query("SELECT * FROM griduser WHERE Online = 'TRUE'");
+$online = $osw->SQL->num_rows($onlineq);
 
-$totalq = $mysqli->query("SELECT * FROM useraccounts");
-$totalc = $totalq->num_rows;
-$totalq->close();
+$totalq = $osw->SQL->query("SELECT * FROM useraccounts");
+$totalc = $osw->SQL->num_rows($totalq);
 
 $monthago = $now - 2592000;
-$latestq = $mysqli->query("SELECT * FROM griduser WHERE Login > '$monthago'");
-$latestc = $latestq->num_rows;
-$latestq->close();
+$latestq = $osw->SQL->query("SELECT * FROM griduser WHERE Login > '$monthago'");
+$latestc = $osw->SQL->num_rows($latestq);
 
-$regionq = $mysqli->query("SELECT * FROM regions");
-$regionc = $regionq->num_rows;
-$regionq->close();
+$regionq = $osw->SQL->query("SELECT * FROM regions");
+$regionc = $osw->SQL->num_rows($regionq);
+
+$destecho = "";
+$destq = $osw->SQL->query("SELECT * FROM $db_osmod.popularplaces ORDER BY `name` ASC LIMIT 0,10");
+while ($destr = $osw->SQL->fetch_array($destq)) {
+	$destname = $destr['name'];
+	$dname = rawurlencode($destname);
+	$destecho .= "<tr><td align='center'><a href='secondlife://$dname' target='_self' style='text-decoration: none;'><h4>$destname</h4></a></td></tr>";
+}
 
 if (is_dir($dir))
 {
@@ -171,13 +122,7 @@ overflow: hidden;
 		<table class="table table-striped table-bordered table-condensed">
 			<tbody>
 				<?php
-				$destq = $mysqli->query("SELECT * FROM $db_osmod.popularplaces ORDER BY `name` ASC LIMIT 0,10");
-				while ($destr = $destq->fetch_array(MYSQLI_ASSOC)) {
-					$destname = $destr['name'];
-					$dname = rawurlencode($destname);
-					echo "<tr><td align='center'><a href='secondlife://$dname' target='_self' style='text-decoration: none;'><h4>$destname</h4></a></td></tr>";
-				}
-				$destq->free();
+					echo $destecho;
 				?>
 			</tbody>
 		</table>
@@ -223,19 +168,18 @@ overflow: hidden;
 			</tbody>
 		</table>
 		<?php if ($twittername) { ?>
-		<a class="twitter-timeline" href="https://twitter.com/<?php echo $twittername; ?>" data-widget-id="301598975952293888">
-			Tweets by @<?php echo $twittername; ?>
-		</a>
+			<a class="twitter-timeline" href="https://twitter.com/<?php echo $twittername; ?>" data-widget-id="301598975952293888">
+				Tweets by @<?php echo $twittername; ?>
+			</a>
+			<script>
+				function(d,s,id) {
+				var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+				if(!d.getElementById(id)){js=d.createElement(s);
+				js.id=id;js.src=p+"://platform.twitter.com/widgets.js";
+				fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+			</script>
 		<?php } ?>
 	</div>
-
-<script>
-!function(d,s,id) {
-	var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
-	if(!d.getElementById(id)){js=d.createElement(s);
-		js.id=id;js.src=p+"://platform.twitter.com/widgets.js";
-		fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-</script>
 
 <script type="text/JavaScript">
 $(document).ready(function(){
@@ -249,10 +193,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script src="http://www.littletech.net/js/jquery.js"></script>
-<script src="http://www.littletech.net/js/bootstrap.js"></script>
+<script src="./js/jquery.js"></script>
+<script src="./js/bootstrap.js"></script>
 </body>
 </html>
-<?php
-$mysqli->close();
-?>
