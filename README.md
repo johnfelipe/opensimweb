@@ -6,6 +6,7 @@ Website cms for Opensim
 OSW will be a Content Management System website for Opensim grids.
 Packed with opensim website goodies.
 Those goodies will be...
+
 Register
 Login with avatar name
 Forum
