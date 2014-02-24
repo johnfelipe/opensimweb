@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50612
 File Encoding         : 65001
 
-Date: 2014-02-20 12:36:43
+Date: 2014-02-23 21:38:46
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -105,6 +105,21 @@ CREATE TABLE `osw_menu` (
 INSERT INTO `osw_menu` VALUES ('1', 'Forum', '/forum/index.php', '0', '0');
 
 -- ----------------------------
+-- Table structure for osw_sessions
+-- ----------------------------
+DROP TABLE IF EXISTS `osw_sessions`;
+CREATE TABLE `osw_sessions` (
+  `id` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `time` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`,`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of osw_sessions
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for osw_settings
 -- ----------------------------
 DROP TABLE IF EXISTS `osw_settings`;
@@ -113,7 +128,7 @@ CREATE TABLE `osw_settings` (
   `name` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of osw_settings
@@ -125,3 +140,31 @@ INSERT INTO `osw_settings` VALUES ('4', 'profile_db', 'osmodules');
 INSERT INTO `osw_settings` VALUES ('5', 'webassetURI', 'localhost/webasset');
 INSERT INTO `osw_settings` VALUES ('6', 'GridName', 'Local Grid');
 INSERT INTO `osw_settings` VALUES ('7', 'SiteAddress', 'http://localhost:81');
+INSERT INTO `osw_settings` VALUES ('8', 'cookie_prefix', 'osw');
+INSERT INTO `osw_settings` VALUES ('9', 'cookie_length', '10');
+INSERT INTO `osw_settings` VALUES ('10', 'cookie_path', '/');
+INSERT INTO `osw_settings` VALUES ('11', 'Style', 'Default');
+INSERT INTO `osw_settings` VALUES ('12', 'Banner', null);
+INSERT INTO `osw_settings` VALUES ('13', 'Logo', null);
+
+-- ----------------------------
+-- Table structure for osw_users
+-- ----------------------------
+DROP TABLE IF EXISTS `osw_users`;
+CREATE TABLE `osw_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `PrincipalID` varchar(255) NOT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `display` varchar(255) DEFAULT NULL,
+  `blocked` char(3) DEFAULT NULL,
+  `active` char(3) DEFAULT NULL,
+  `style` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`,`PrincipalID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of osw_users
+-- ----------------------------

@@ -1,3 +1,5 @@
+
+</div> <!-- Ends the content div found in header.php -->
 <script type="text/JavaScript">
 $(document).ready(function(){
 	$('.dropdown-toggle').dropdown();

@@ -30,6 +30,22 @@ if ($u) {
 $gridname = $osw->config['GridName'];
 $ip2webassets = $osw->config['webassetURI'];
 $site_address = $osw->config['SiteAddress'];
+$site_banner = $osw->config['Banner'];
+$site_logo = $osw->config['Logo'];
+
+$user_style = $osw->user_info['style'];
+
+if (!$user_style || $user_style == "site") {
+	$style = $osw->config['Style'];
+}else{
+	$style = $user_style;
+}
+
+if ($iste_logo) {
+	$logo = "<img src='" . $site_logo . "' border='0'>";
+}else{
+	$logo = "<B>" . $gridname . "</B>";
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -47,12 +63,16 @@ $site_address = $osw->config['SiteAddress'];
     <![endif]-->
 
 <!-- You can change this to your own bootstrap file -->
-<link href="<?php echo $site_address; ?>/css/bootstrap.css" rel="stylesheet">
+<link href="<?php echo $site_address; ?>/css/<?php echo $style; ?>/bootstrap.css" rel="stylesheet">
 
 </head>
 <body>
+<div class="container" id="content">
 <?php
-if ($nomenu == True) {
+if ($site_banner) {
+	echo "<img src='" . $site_banner . "' border='0'>";
+}
+if ($nomenu) {
 }else{
 include ('menu.php');
 }

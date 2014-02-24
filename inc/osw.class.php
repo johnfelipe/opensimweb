@@ -14,6 +14,9 @@ class osw
 		Require_once('SQL.class.php');
 		$this->SQL = new SQL($this);
 
+		Require_once('Sessions.class.php');
+		$this->Sessions = new Sessions($this);
+
 		Require_once('Users.class.php');
 		$this->users = new Users($this);
 

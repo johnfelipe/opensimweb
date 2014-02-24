@@ -30,7 +30,13 @@ var $osw;
 		}
 	}
 
-	function fetch_user_info($firstname, $lastname) {
+	function fetch_user_info_by_username($username) {
+		$result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE username = '$username'");
+		$row = $this->osw->SQL->fetch_array($result);
+		return $row;
+	}
+
+	function fetch_user_info_by_osname($firstname, $lastname) {
 		$result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts
 		 WHERE FirstName = '$firstname' AND LastName = '$lastname'");
 		$row = $this->osw->SQL->fetch_array($result);
@@ -81,24 +87,42 @@ var $osw;
 	 		$FirstName = $user_info['FirstName'];
 	 		$LastName = $user_info['LastName'];
        	}else if ($echeck === false) {
-       		$explode = explode(" ", $user);
-       		$FirstName = $explode[0];
-       		$LastName = $explode[1];
-       		if (!$LastName) {
-       			$LastName = "Resident";
-       		}
-	 		$user_info = $this->fetch_user_info($FirstName, $LastName);
+       		$findspace = " ";
+			$spacecheck = strpos($user, $findspace);
+			if ($spacheck !== false) {
+				$user_info = $this->fetch_user_info_by_username($user);
+			}else{
+       			$explode = explode(" ", $user);
+       			$FirstName = $explode[0];
+       			$LastName = $explode[1];
+       			if (!$LastName) {
+       				$LastName = "Resident";
+       			}
+	 			$user_info = $this->fetch_user_info_by_osname($FirstName, $LastName);
+	 		}
 		}
 
 		$user_uuid = $user_info['PrincipalID'];
-		$auth = $this->getAuth($user_uuid);
-		$user_pass = $auth['passwordHash'];
-		$user_salt = $auth['passwordSalt'];
+		$user_pass = $user_info['password'];
 
 		if ($this->compare_password($pass, $user_pass)) {
-
+			if ($user_info['blocked'] == 'no') {
+				if ($user_info['active'] == 'yes') {
+					if ($remember == 1) {
+						$this->osw->Sessions->create_session($user_uuid, true);
+					}else{
+						$this->osw->Sessions->create_session($user_uuid, false);
+					}
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		}else{
+			return false;
 		}
-
 	}
 }
 ?>
