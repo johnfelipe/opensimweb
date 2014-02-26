@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50612
 File Encoding         : 65001
 
-Date: 2014-02-23 21:38:46
+Date: 2014-02-26 11:14:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -87,24 +87,6 @@ CREATE TABLE `osw_forum_topic` (
 INSERT INTO `osw_forum_topic` VALUES ('1', '1', 'Test topic', 'Test message', '1392913592', null);
 
 -- ----------------------------
--- Table structure for osw_menu
--- ----------------------------
-DROP TABLE IF EXISTS `osw_menu`;
-CREATE TABLE `osw_menu` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `link` varchar(255) DEFAULT NULL,
-  `subof` varchar(255) NOT NULL DEFAULT '0',
-  `sort` varchar(255) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of osw_menu
--- ----------------------------
-INSERT INTO `osw_menu` VALUES ('1', 'Forum', '/forum/index.php', '0', '0');
-
--- ----------------------------
 -- Table structure for osw_sessions
 -- ----------------------------
 DROP TABLE IF EXISTS `osw_sessions`;
@@ -128,7 +110,7 @@ CREATE TABLE `osw_settings` (
   `name` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of osw_settings
@@ -146,6 +128,7 @@ INSERT INTO `osw_settings` VALUES ('10', 'cookie_path', '/');
 INSERT INTO `osw_settings` VALUES ('11', 'Style', 'Default');
 INSERT INTO `osw_settings` VALUES ('12', 'Banner', null);
 INSERT INTO `osw_settings` VALUES ('13', 'Logo', null);
+INSERT INTO `osw_settings` VALUES ('14', 'search_db', 'osmodules');
 
 -- ----------------------------
 -- Table structure for osw_users
