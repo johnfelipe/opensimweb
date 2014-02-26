@@ -24,11 +24,8 @@ while ($catr = $osw->SQL->fetch_array($catq)) {
 			$board_name = $boardr['name'];
 			$board_desc = $boardr['desc'];
 
-			$topicq = $osw->SQL->query("SELECT * FROM `{$osw->config['db_prefix']}forum_topic` WHERE board_id = '$board_id'");
-			$topicc = $osw->SQL->num_rows($topicq);
-
-			$replyq = $osw->SQL->query("SELECT * FROM `{$osw->config['db_prefix']}forum_replies` WHERE board_id = '$board_id'");
-			$replyc = $osw->SQL->num_rows($replyq);
+			$topicc = $osw->forum->countTopics("WHERE board_id = '$board_id'");
+			$replyc = $osw->forum->countReplies("WHERE board_id = '$board_id'");
 
 			if ($replyc == 0) {
 				$replyer = "";

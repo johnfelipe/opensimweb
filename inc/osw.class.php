@@ -29,6 +29,12 @@ class osw
 		Require_once('site.class.php');
 		$this->site = new site($this);
 
+		Require_once('forum.class.php');
+		$this->forum = new forum($this);
+
+		Require_once('grid.class.php');
+		$this->grid = new grid($this);
+
 		$cq = $this->SQL->query("SELECT * FROM `{$this->config['db_prefix']}settings`");
 		while ($crow = $this->SQL->fetch_array($cq)) {
 			$this->config[$crow['name']] = $crow['value'];

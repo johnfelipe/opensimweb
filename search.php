@@ -6,93 +6,6 @@ require_once('inc/header.php');
 * SearchURL = "http://yourwebsiteaddresshere/ossearch.php?search=[QUERY]"
 *** *** *** *** *** ***/
 
-	function getosuser($FirstName, $LastName) {
-	$q = $osw->SQL->query("SELECT * FROM $osmain.useraccounts WHERE FirstName = '$FirstName' AND LastName = '$LastName'");
-	$r = $osw->SQL->fetch_array($q);
-	return $r;
-	}
-
-	function uuid2name($uuid) {
-	$q2 = $osw->SQL->query("SELECT * FROM $osmain.useraccounts WHERE PrincipalID = '$uuid'");
-	$r2 = $osw->SQL->fetch_array($q2);
-	return $r2;
-	}
-
-	function regionname($ruuid) {
-	$getregionq = $osw->SQL->query("SELECT * FROM $osmain.regions WHERE uuid = '$ruuid'");
-	$regionrow = $osw->SQL->fetch_array($getregionq);
-	$r3 = $regionrow['regionName'];
-	return $r3;
-	}
-
-	function regionip($UUID) {
-	$getregionq2 = $osw->SQL->query("SELECT * FROM $osmain.regions WHERE uuid = '$UUID'");
-	$regionrow2 = $osw->SQL->fetch_array($getregionq2);
-	$r4 = $regionrow2['serverIP'];
-	return $r4;
-	}
-
-	function online($uuid) {
-	$oq = $osw->SQL->query("SELECT * FROM $osmain.griduser WHERE UserID = '$uuid'");
-	$or = $osw->SQL->fetch_array($oq);
-	$online = $or['Online'];
-	return $online;
-	}
-
-	function userspersim($sim) {
-	$simq = $osw->SQL->query("SELECT * FROM $osmain.presence WHERE RegionID = '$sim'");
-	$count = $osw->SQL->num_rows($simq);
-	return $count;
-	}
-
-	function time2date($time) {
-	$dt = new DateTime("@$time");
-	$r = $dt->format('M d Y g:ia T');
-	return $r;
-	}
-
-	function oscat($catid) {
-		switch ($catid) {
-		case "0":
-			$r = "Any";
-			break;
-		case "18":
-			$r = "Discussion";
-			break;
-		case "19":
-			$r = "Sports";
-			break;
-		case "20":
-			$r = "Live Music";
-			break;
-		case "22":
-			$r = "Commercial";
-			break;
-		case "23":
-			$r = "Nightlife/Entertainment";
-			break;
-		case "24":
-			$r = "Games/Contests";
-			break;
-		case "25":
-			$r = "Pageants";
-			break;
-		case "26":
-			$r = "Education";
-			break;
-		case "27":
-			$r = "Arts and Culture";
-			break;
-		case "28":
-			$r = "Charity/Support Groups";
-			break;
-		case "29":
-			$r = "Miscellaneous";
-			break;
-		}
-	return $r;
-	}
-
 $search = $osw->Security->make_safe($_GET['search']);
 $search = strtoupper($search);
 $search = strip_tags($search);
@@ -205,7 +118,7 @@ echo "Test";
 <?php
 if ($type == "classifieds" || !$type) {
 	echo "<h3>Classifieds</h3>";
-$cq = $osw->SQL->query("SELECT * FROM $osmod.classifieds WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND creationdate < '$now' AND expirationdate > '$now' AND classifiedflags < '$m' ORDER BY 'creationdate' DESC LIMIT 0,100");
+$cq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.classifieds WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND creationdate < '$now' AND expirationdate > '$now' AND classifiedflags < '$m' ORDER BY 'creationdate' DESC LIMIT 0,100");
 while ($cn = $osw->SQL->fetch_array($cq)) {
 $creatoruuid = $cn['creatoruuid'];
 $creationdate = $cn['creationdate'];
@@ -221,13 +134,13 @@ $classifiedflags = $cn['classifiedflags'];
 $creationdate = date("M d Y h:i a T",$creationdate);
 $expirationdate = date("M d Y h:i a T",$expirationdate);
 
-$parq = $osw->SQL->query("SELECT * FROM $osmod.allparcels WHERE parcelUUID = '$parceluuid'");
+$parq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.allparcels WHERE parcelUUID = '$parceluuid'");
 $parrow = $osw->SQL->fetch_array($parq);
 $regionid = $parrow['regionUUID'];
 $parcelname = $parrow['parcelname'];
 $loc = $parrow['landingpoint'];
 
-$simq = $osw->SQL->query("SELECT * FROM $osmain.regions WHERE uuid = '$regionid'");
+$simq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.regions WHERE uuid = '$regionid'");
 $simr = $osw->SQL->fetch_array($simq);
 $sim = $simr['regionName'];
 
@@ -237,7 +150,7 @@ if (!$loc) {
 	$locr = str_replace("/", ",", $loc);
 }
 
-$FL = uuid2name($creatoruuid);
+$FL = $osw->grid->uuid2name($creatoruuid);
 $FName = $FL['FirstName'];
 $LName = $FL['LastName'];
 
@@ -281,7 +194,7 @@ $description
 }
 if ($type == "destinations" || !$type) {
 	echo "<h3>Destinations</h3>";
-$popq = $osw->SQL->query("SELECT * FROM $osmod.popularplaces WHERE name LIKE '%$search%' AND mature < '$m' ORDER BY `dwell` DESC LIMIT 0,100");
+$popq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.popularplaces WHERE name LIKE '%$search%' AND mature < '$m' ORDER BY `dwell` DESC LIMIT 0,100");
 while ($popn = $osw->SQL->fetch_array($popq)) {
 $parcelUUID = $popn['parcelUUID'];
 $name = $popn['name'];
@@ -295,14 +208,14 @@ $mature = "$MATURE";
 $mature = "$ADULT";
 }
 
-$parq = $osw->SQL->query("SELECT * FROM $osmod.parcels WHERE parcelUUID = '$parcelUUID'");
+$parq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.parcels WHERE parcelUUID = '$parcelUUID'");
 $parrow = $osw->SQL->fetch_array($parq);
 $reguuid = $parrow['regionUUID'];
 $landing = $parrow['landingpoint'];
 $desc = $parrow['description'];
 
-$simname = regionname($reguuid);
-$usersonregion = userspersim($reguuid);
+$simname = $osw->grid->regionname($reguuid);
+$usersonregion = $osw->grid->userspersim($reguuid);
 
 echo "  <div class='panel panel-default'>
     <div class='panel-heading'>
@@ -327,7 +240,7 @@ $desc<br>
 }
 if ($type == "events" || !$type) {
 	echo "<h3>Events</h3>";
-$evq = $osw->SQL->query("SELECT * FROM $osmod.events WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND dateUTC > $now AND eventflags < '$m' ORDER BY `dateUTC` LIMIT 0,100");
+$evq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.events WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND dateUTC > $now AND eventflags < '$m' ORDER BY `dateUTC` LIMIT 0,100");
 while ($evnum = $osw->SQL->fetch_array($evq)) {
 
 $creator = $evnum['creatoruuid'];
@@ -339,7 +252,7 @@ $event_type = $evnum['eventflags'];
 
 $event_time = date("M d Y h:i a T",$time);
 
-$getname = uuid2name($creator);
+$getname = $osw->grid->uuid2name($creator);
 $first = $getname['FirstName'];
 $last = $getname['LastName'];
 $event_host = "$first $last";
@@ -377,7 +290,7 @@ $eventinfo<br>
 }
 if ($type == "groups" || !$type) {
 	echo "<h3>Groups</h3>";
-$grpq = $osw->SQL->query("SELECT * FROM $osmain.os_groups_groups WHERE Name LIKE '%$search%' AND ShowInList = '1' ORDER BY `Name` ASC LIMIT 0,100");
+$grpq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.os_groups_groups WHERE Name LIKE '%$search%' AND ShowInList = '1' ORDER BY `Name` ASC LIMIT 0,100");
 while ($grpn = $osw->SQL->fetch_array($grpq)) {
 
 $GroupID = $grpn['GroupID'];
@@ -389,11 +302,11 @@ $OpenEnrollment = $grpn['OpenEnrollment'];
 $MembershipFee = $grpn['MembershipFee'];
 $MaturePublish = $grpn['MaturePublish'];
 
-$FL = uuid2name($FounderID);
+$FL = $osw->grid->uuid2name($FounderID);
 $FName = $FL['FirstName'];
 $LName = $FL['LastName'];
 
-$gmq = $osw->SQL->query("SELECT * FROM $osmain.os_groups_membership WHERE GroupID = '$GroupID'");
+$gmq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.os_groups_membership WHERE GroupID = '$GroupID'");
 $gmcount = $osw->SQL->num_rows($gmq);
 
 if ($InsigniaID == "00000000-0000-0000-0000-000000000000" || !$InsigniaID) {
@@ -444,7 +357,7 @@ Enrollment: $join
 }
 if ($type == "4sale" || !$type) {
 	echo "<h3>For Sale</h3>";
-$forsaleq = $osw->SQL->query("SELECT * FROM $osmod.parcelsales WHERE parcelname LIKE '%$search%' AND mature < '$m' ORDER BY `saleprice` ASC LIMIT 0,100");
+$forsaleq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.parcelsales WHERE parcelname LIKE '%$search%' AND mature < '$m' ORDER BY `saleprice` ASC LIMIT 0,100");
 while ($forsnum = $osw->SQL->fetch_array($forsaleq)) {
 
 $regionUUID = $forsnum['regionUUID'];
@@ -454,7 +367,7 @@ $area = $forsnum['area'];
 $saleprice = $forsnum['saleprice'];
 $landingpoint = $forsnum['landingpoint'];
 
-$regionname = regionname($regionUUID);
+$regionname = $osw->grid->regionname($regionUUID);
 
 echo "  <div class='panel panel-default'>
     <div class='panel-heading'>
@@ -480,8 +393,8 @@ echo "  <div class='panel panel-default'>
 
 }
 if ($type == "people" || !$type) {
-	echo "<h3>Places</h3>";
-$pplq = $osw->SQL->query("SELECT * FROM $osmain.useraccounts WHERE FirstName LIKE '%$search%' OR LastName LIKE '%$search%' ORDER BY `Created` ASC LIMIT 0,100");
+	echo "<h3>People</h3>";
+$pplq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.useraccounts WHERE FirstName LIKE '%$search%' OR LastName LIKE '%$search%' ORDER BY `Created` ASC LIMIT 0,100");
 while ($pplnum = $osw->SQL->fetch_array($pplq)) {
 
 $uuid = $pplnum['PrincipalID'];
@@ -494,14 +407,14 @@ $profname = $sFirst;
 $profname = $sFirst.".".$sLast;
 }
 
-$online = online($uuid);
+$online = $osw->grid->online($uuid);
 if ($online == "False") {
 $onoff = "offlinedot.png";
 }else if ($online == "True") {
 $onoff = "onlinedot.png";
 }
 
-$profq = $osw->SQL->query("SELECT * FROM $osmod.userprofile WHERE useruuid = '$uuid' AND profileMaturePublish < '$m'");
+$profq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.userprofile WHERE useruuid = '$uuid' AND profileMaturePublish < '$m'");
 $prow = $osw->SQL->fetch_array($profq);
 
 $show = $prow['profileAllowPublish'];
@@ -561,7 +474,7 @@ $fakelife
 }
 if ($type == "places" || !$type) {
 	echo "<h3>Places</h3>";
-$placeq = $osw->SQL->query("SELECT * FROM $osmod.parcels WHERE parcelname LIKE '%$search%' OR description LIKE '%$search%' AND public = 'true' ORDER BY `parcelUUID` ASC LIMIT 0,100");
+$placeq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.parcels WHERE parcelname LIKE '%$search%' OR description LIKE '%$search%' AND public = 'true' ORDER BY `parcelUUID` ASC LIMIT 0,100");
 while ($placenum = $osw->SQL->fetch_array($placeq)) {
 
 $regionUUID = $placenum['regionUUID'];
@@ -572,8 +485,8 @@ $description = $placenum['description'];
 $searchcategory = $placenum['searchcategory'];
 $mature = $placenum['mature'];
 
-$regionname = regionname($regionUUID);
-$usersonregion = userspersim($regionUUID);
+$regionname = $osw->grid->regionname($regionUUID);
+$usersonregion = $osw->grid->userspersim($regionUUID);
 
 if ($mature == "PG") {
 $mr = "1";
