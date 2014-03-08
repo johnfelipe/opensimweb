@@ -4,3 +4,8 @@ Then setup inc/db_info.php with the correct connect info to your database.
 The two included sql files are for if your checking this out on a test machine that does not have a opensim grid installed on it.
 
 This version is to just see my idea, its more like a demo preview concept idea then a full production version and to get a idea of what i like to do.
+
+The password to the admin account to try this out yourself is 123456.
+
+Username: admin
+Password: 123456

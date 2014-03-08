@@ -1,0 +1,6 @@
+- Basic ImageMagick error handling
+
+- Wrap this in a single class
+
+- Publish the 'on-demand-loading' tiled map using this WebAssets class, and some Async JS/xml
+

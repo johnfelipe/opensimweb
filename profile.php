@@ -3,6 +3,17 @@ $page_title = "Profile of ";
 define('OSW_IN_SYSTEM', true);
 require_once('inc/header.php');
 
+$u = $osw->Security->make_safe($_GET['u']);
+
+if ($u) {
+	$uexplode = explode(".", $u);
+	$firstname = $uexplode[0];
+	$lastname = $uexplode[1];
+	if (!$lastname) {
+		$lastname = "Resident";
+	}
+}
+
 $uq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.useraccounts WHERE FirstName = '$firstname' AND LastName = '$lastname'");
 $ur = $osw->SQL->fetch_array($uq);
 $uuid = $ur['PrincipalID'];

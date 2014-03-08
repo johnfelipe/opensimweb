@@ -14,42 +14,90 @@ var $osw;
 	}
 
 	function getosuser($FirstName, $LastName) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.useraccounts WHERE FirstName = '$FirstName' AND LastName = '$LastName'");
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$FirstName' AND LastName = '$LastName'");
+	$r = $this->osw->SQL->fetch_array($q);
+	return $r;
+	}
+
+	function getosuser_by_uuid($uuid) {
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE PrincipalID = '$uuid'");
 	$r = $this->osw->SQL->fetch_array($q);
 	return $r;
 	}
 
 	function uuid2name($UUID) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.useraccounts WHERE PrincipalID = '$UUID'");
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE PrincipalID = '$UUID'");
 	$r = $this->osw->SQL->fetch_array($q);
 	return $r;
 	}
 
 	function regionname($UUID) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.regions WHERE uuid = '$UUID'");
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Regions WHERE uuid = '$UUID'");
 	$r = $this->osw->SQL->fetch_array($q);
 	$r3 = $r['regionName'];
 	return $r3;
 	}
 
 	function regionip($UUID) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.regions WHERE uuid = '$UUID'");
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Regions WHERE uuid = '$UUID'");
 	$r = $this->osw->SQL->fetch_array($q);
 	$r4 = $r['serverIP'];
 	return $r4;
 	}
 
 	function online($UUID) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.griduser WHERE UserID = '$UUID'");
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE UserID = '$UUID'");
 	$r = $this->osw->SQL->fetch_array($q);
 	$online = $r['Online'];
 	return $online;
 	}
 
 	function userspersim($sim) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.presence WHERE RegionID = '$sim'");
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Presence WHERE RegionID = '$sim'");
 	$c = $this->osw->SQL->num_rows($q);
 	return $c;
+	}
+
+	function getFriends($uuid) {
+		echo "<div class='table-responsive'>
+		<table class='table table-hover table-condensed'>
+		<thead>
+		<tr>
+		<th><small><B>NAME</B></small></th>
+		<th></small><B>STATUS</B></small></th>
+		</tr>
+		</thead>
+		<tbody>
+		";
+		$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Friends WHERE PrincipalID = '$uuid'");
+		while ($r = $this->osw->SQL->fetch_array($q)) {
+			$FriendID = $r['Friend'];
+			$q2 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE PrincipalID = '$FriendID'");
+			$q3 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE UserID = '$FriendID'");
+			$r2 = $this->osw->SQL->fetch_array($q2);
+			$r3 = $this->osw->SQL->fetch_array($q3);
+			$FriendFirst = $r2['FirstName'];
+			$FriendLast = $r2['LastName'];
+			$Online = $r3['Online'];
+
+			if ($FriendLast == "Resident") {
+				$FriendLast = "";
+			}
+
+			if ($Online == "True") {
+				$fon == "online";
+			}else if ($Online == "False") {
+				$fon = "offline";
+			}
+			echo "<tr>
+			<td>".$FriendFirst." ".$FriendLast."</td>
+			<td>".$fon."</td>
+			</tr>
+			";
+		}
+		echo "</tbody>
+		</table>
+		</div>";
 	}
 
 	function oscat($catid) {
@@ -92,6 +140,21 @@ var $osw;
 			break;
 		}
 	return $r;
+	}
+
+	function gridonline() {
+		$loginuri = $this->osw->config['loginURI'];
+		$explode = explode(":", $loginuri);
+		$ip2robust = $explode[0];
+		$port2robust = $explode[1];
+		$fp = @fsockopen($ip2robust, $port2robust, $errno, $errstr, 1);
+		if ($fp) {
+			$return = TRUE;
+			fclose($fp);
+		}else{
+			$return = FALSE;
+		}
+		return $return;
 	}
 }
 ?>

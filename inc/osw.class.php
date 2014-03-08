@@ -14,11 +14,16 @@ class osw
 		Require_once('SQL.class.php');
 		$this->SQL = new SQL($this);
 
+		$cq = $this->SQL->query("SELECT * FROM `{$this->config['db_prefix']}settings`");
+		while ($crow = $this->SQL->fetch_array($cq)) {
+			$this->config[$crow['name']] = $crow['value'];
+		}
+
 		Require_once('Sessions.class.php');
 		$this->Sessions = new Sessions($this);
 
 		Require_once('Users.class.php');
-		$this->users = new Users($this);
+		$this->Users = new Users($this);
 
 		Require_once('pagination.class.php');
 		$this->pagination = new pagination($this);
@@ -35,9 +40,13 @@ class osw
 		Require_once('grid.class.php');
 		$this->grid = new grid($this);
 
-		$cq = $this->SQL->query("SELECT * FROM `{$this->config['db_prefix']}settings`");
-		while ($crow = $this->SQL->fetch_array($cq)) {
-			$this->config[$crow['name']] = $crow['value'];
+		$this->Users->validate_login();
+		$this->Sessions->clear_old_sessions();
+
+		if ($this->user_info['username']) {
+			$user_id = $this->user_info['id'];
+			$now = time();
+			$this->SQL->query("UPDATE `{$this->config['db_prefix']}users` SET last_action = '$now' WHERE id = '$user_id'");
 		}
 	}
 

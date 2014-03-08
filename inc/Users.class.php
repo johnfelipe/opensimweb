@@ -14,8 +14,7 @@ var $osw;
 	}
 
 	function validate_password($input) {
-		if (strlen($input) <= $this->osw->config['max_password'] &&
-			strlen($input) >= $this->osw->config['min_password']) {
+		if (strlen($input) <= $this->osw->config['max_password'] && strlen($input) >= $this->osw->config['min_password']) {
 		    return true;
 		}else{
 		    return false;
@@ -23,36 +22,11 @@ var $osw;
 	}
 
 	function validate_login() {
-		if ($this->osw->Session->find_session()) {
+		if ($this->osw->Sessions->find_session()) {
 		    return true;
 		}else{
 		    return false;
 		}
-	}
-
-	function fetch_user_info_by_username($username) {
-		$result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE username = '$username'");
-		$row = $this->osw->SQL->fetch_array($result);
-		return $row;
-	}
-
-	function fetch_user_info_by_osname($firstname, $lastname) {
-		$result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts
-		 WHERE FirstName = '$firstname' AND LastName = '$lastname'");
-		$row = $this->osw->SQL->fetch_array($result);
-		return $row;
-	}
-
-	function fetch_user_info_by_email($email) {
-		$result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE Email = '$email'");
-		$row = $this->osw->SQL->fetch_array($result);
-		return $row;
-	}
-
-	function getAuth($uuid) {
-		$result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Auth WHERE UUID = '$uuid'");
-		$row = $this->osw->SQL->fetch_array($result);
-		return $row;
 	}
 
 	function generate_password_hash($psswrd) {
@@ -65,61 +39,74 @@ var $osw;
 
 		if ($input_hash == $real_password) {
 		    return true;
-		}
-		else {
+		}else{
 		    return false;
 		}
 	}
 
-	function login()
-	{
-		$user = $this->osw->Security->make_safe($_GET['user']);
-		$pass = $this->osw->Security->make_safe($_GET['pass']);
-		$recaptcha = $this->osw->Security->make_safe($_GET['recaptcha']);
-		$lastpage = $this->osw->Security->make_safe($_GET['lastpage']);
-		$remember = $this->osw->Security->make_safe($_GET['remember']);
-
-
-		$findme   = '@';
-		$echeck = strpos($user, $findme);
-		if ($echeck !== false) {
-	 		$user_info = $this->fetch_user_info_by_email($user);
-	 		$FirstName = $user_info['FirstName'];
-	 		$LastName = $user_info['LastName'];
-       	}else if ($echeck === false) {
-       		$findspace = " ";
-			$spacecheck = strpos($user, $findspace);
-			if ($spacheck !== false) {
-				$user_info = $this->fetch_user_info_by_username($user);
-			}else{
-       			$explode = explode(" ", $user);
-       			$FirstName = $explode[0];
-       			$LastName = $explode[1];
-       			if (!$LastName) {
-       				$LastName = "Resident";
-       			}
-	 			$user_info = $this->fetch_user_info_by_osname($FirstName, $LastName);
-	 		}
-		}
-
-		$user_uuid = $user_info['PrincipalID'];
+	function login($user, $pass, $remember) {
+		$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE username = '$user'");
+		$user_info = $this->osw->SQL->fetch_array($q);
+		$user_id = $user_info['id'];
 		$user_pass = $user_info['password'];
 
-		if ($this->compare_password($pass, $user_pass)) {
-			if ($user_info['blocked'] == 'no') {
-				if ($user_info['active'] == 'yes') {
-					if ($remember == 1) {
-						$this->osw->Sessions->create_session($user_uuid, true);
+		$time = time();
+
+		if ($this->validate_password($pass)) {
+			if ($this->compare_passwords($pass, $user_pass)) {
+				if ($user_info['blocked'] == 'no') {
+					if ($user_info['active'] == 'yes') {
+						if ($remember == 1) {
+							$this->osw->Sessions->create_session($user_id, "true");
+						}else{
+							$this->osw->Sessions->create_session($user_id, "false");
+						}
+						$this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}users` SET online = 'yes', last_action = '$time' WHERE username = '$user'");
+						return true;
 					}else{
-						$this->osw->Sessions->create_session($user_uuid, false);
+						return false;
 					}
-					return true;
 				}else{
 					return false;
 				}
 			}else{
 				return false;
 			}
+		}else{
+			return false;
+		}
+	}
+
+	function logout_user() {
+	    $session_names = array('id', 'time', 'code');
+	    $ses_code = $_SESSION[$this->osw->config['cookie_prefix'] . 'code'];
+		if (isset($ses_code)) {
+            $this->osw->SQL->query("DELETE FROM `{$this->osw->config['db_prefix']}sessions` WHERE code = '$ses_code'");
+		}
+        $_SESSION = array();
+
+		if (isset($_COOKIE[session_name()])) {
+		    setcookie(session_name(), '', time() - 42000, '/');
+		}
+
+		if (isset($_COOKIE[$this->osw->config['cookie_prefix'] . 'id'])) {
+			foreach ($session_names as $value) {
+			    setcookie($this->osw->config['cookie_prefix'] . $value, 0, time() - 3600, $this->osw->config['cookie_path'], $this->osw->config['cookie_domain']);
+			}
+		}
+
+	    $this->osw->redirect($this->osw->config['logout_redirect']);
+	}
+
+	function check_user_exist($user) {
+		if (!$user) {
+			return false;
+		}
+
+		$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE username = '$user'");
+		$r = $this->osw->SQL->fetch_array($q);
+		if ($r['id']) {
+			return true;
 		}else{
 			return false;
 		}

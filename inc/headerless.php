@@ -28,5 +28,7 @@ if ($u) {
 }
 
 $gridname = $osw->config['GridName'];
+$gridnick = $osw->config['GridNick'];
 $ip2webassets = $osw->config['webassetURI'];
+$site_address = $osw->config['SiteAddress'];
 ?>

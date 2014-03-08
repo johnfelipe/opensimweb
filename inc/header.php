@@ -28,12 +28,25 @@ if ($u) {
 }
 
 $gridname = $osw->config['GridName'];
+$gridnick = $osw->config['GridNick'];
 $ip2webassets = $osw->config['webassetURI'];
 $site_address = $osw->config['SiteAddress'];
 $site_banner = $osw->config['Banner'];
 $site_logo = $osw->config['Logo'];
+$gridmoney = $osw->config['GridMoney'];
+$min_sales_2b_featured = $osw->config['min_sales_2b_featured'];
 
+$twitter = $osw->config['Twitter'];
+$facebook = $osw->config['Facebook'];
+
+$user_id = $osw->user_info['id'];
+$user = $osw->user_info['username'];
 $user_style = $osw->user_info['style'];
+$user_uuid = $osw->user_info['PrincipalID'];
+
+$os_user_info = $osw->grid->getosuser_by_uuid($user_uuid);
+$user_first = $os_user_info['FirstName'];
+$user_last = $os_user_info['LastName'];
 
 if (!$user_style || $user_style == "site") {
 	$style = $osw->config['Style'];
@@ -64,10 +77,18 @@ if ($iste_logo) {
 
 <!-- You can change this to your own bootstrap file -->
 <link href="<?php echo $site_address; ?>/css/<?php echo $style; ?>/bootstrap.css" rel="stylesheet">
+<link href="<?php echo $site_address; ?>/css/font-awesome.css" rel="stylesheet">
+<link href="<?php echo $site_address; ?>/css/normalize.css" rel="stylesheet">
 
 </head>
 <body>
-<div class="container" id="content">
+<style>
+body {
+	padding-top: 70px;
+	padding-bottom: 70px;
+}
+</style>
+<div class="container-fluid" id="content">
 <?php
 if ($site_banner) {
 	echo "<img src='" . $site_banner . "' border='0'>";
@@ -76,4 +97,37 @@ if ($nomenu) {
 }else{
 include ('menu.php');
 }
+
+if ($hide_sidebars) {
+}else{
+?>
+<div class="row">
+<div class="col-md-4">
+  	<div class="row">
+		<div class="col-md-6">
+		<?php
+		if ($user) {
+			echo "<div class='panel'>
+  			<div class='panel-heading'><B>Friends</B></div>
+  			<div class='panel-body'>";
+  			echo $osw->grid->getFriends('6551271e-fee0-4054-829f-de71252cae93');
+  			echo "</div></div>";
+		}
+		?>
+		<div class='panel'>
+  		 <div class="panel-heading"><B>Social Networks</B></div>
+  			<div class="panel-body">
+  				<?php
+  				echo "<a href='http://www.twitter.com/@".$twitter."/'>Follow us on Twitter</a>";
+  				echo "<br>";
+  				echo "<a href='http://www.facebook.com/".$facebook."/'>Like us on Facebook</a>";
+  				?>
+	  		</div>
+  		 </div>
+		</div>
+  </div>
+</div>
+<div class="col-md-8">
+<?php
+} // this is to be able to hide the side bars. most useful for full page layout
 ?>

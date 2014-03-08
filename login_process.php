@@ -1,20 +1,21 @@
 <?php
-session_start();
 define('OSW_IN_SYSTEM', true);
-require_once('inc/osw.class.php');
+require_once('inc/headerless.php');
 
-// Start the main class
-$osw = new osw(SYS_CURRENT_LANG);
-
-if (isset($_POST['process'])) {
-	// Try to login the user
-	if ($osw->Users->login()) {
-	    $osw->redirect($osw->config['login_redirect']);
+if ($osw->Security->make_safe($_POST['process'])) {
+	$user = $osw->Security->make_safe($_POST['username']);
+	$pass = $osw->Security->make_safe($_POST['password']);
+	$remember = $osw->Security->make_safe($_POST['remember']);
+	$lastpage = $osw->Security->make_safe($_POST['lastpage']);
+	if ($osw->Users->login($user, $pass, $remember)) {
+		if (!$lastpage) {
+			$lastpage = "index.php";
+		}
+	    $osw->redirect($lastpage);
+	}else{
+	    $osw->redirect('login.php?err=invalidcreds');
 	}
-	else {
-	    $osw->redirect('login.php');
-	}
+}else{
+    $osw->redirect('login.php?err=unable2process');
 }
-else {
-    $osw->redirect('login.php');
-}
+?>

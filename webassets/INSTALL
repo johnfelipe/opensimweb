@@ -1,0 +1,69 @@
+Requirements :
+--------------
+- Running OpenSimulator Grid
+- Php-enabled webserver
+- Php5 > 5.1.3
+- ImageMagick > 6.2.4
+- imagick PECL > 2.2.0 (http://pecl.php.net/package/imagick or "pecl install imagick")
+
+- (optional) : suitable tmpreaper settings, to remove expired images from cache.
+
+
+Setup :
+-------
+1. move the "cache" directory out of your webserver documentRoot :
+   sudo mkdir -p /var/www/datas/webassets/cache
+2. Ensure your webserver has write permissions over the cache directory :
+   (replace apache.apache with your webserver user.group, according to your configuration)
+   sudo chown -R apache.apache /var/www/datas/webassets
+3. move all files and directories to your documentRoot
+4. EDIT inc/config.php and BE SURE TO EDIT :
+   ** ASSET_SERVER to point to your asset server
+      (should match your OpenSim.ini asset_server_url entry, followed by "/assets/")
+   ** JP2_CACHE_DIR to point to your new cache/jp2/ location
+      (eg: '/var/www/datas/webassets/cache/jp2/' )
+   ** PIC_CACHE_DIR to point to your new cache/pic location
+      (eg: '/var/www/datas/webassets/cache/pic/' )
+   * ASSET_ID_NOTFOUND to point to a 'default' asset to show when asset.php is called with wrong params
+     (seach your database, or enter '00000000-0000-0000-0000-000000000000')
+   
+   * if your asset server is under heavy load, consider increasing ASSET_SERVER_TIMEOUT
+
+
+
+TEST :
+------
+1. find an asset id stored on _your_ asset server :
+   * by using your database query tool
+ OR
+   * by searching for the string "asset found" in your OpenSim.Grid.AssetServer.log
+
+   you should get an asset UUID in the form : 
+   2bfd3884-7e27-69b9-ba3a-3e673f680004
+
+2. Point your webbrowser to the url of your webassets/asset.php :
+   http://your.webserver.tld/asset.php?id=2bfd3884-7e27-69b9-ba3a-3e673f680004
+   (if you've read this, you know how to retrieve that asset UUID don't you? :p )
+
+You should see the asset image, resized to ASSET_RESIZE_FIXED_WIDTH pixel width.
+(first load may take a second or two, following accesses to this url should be really faster.)
+
+
+Next thing to try is to enter a wrong UUID, add a digit at the end of previous url...
+... after ASSET_SERVER_TIMEOUT seconds (default to 8s) you should see a default picture, indicating
+that the operation failed.
+
+
+USAGE :
+-------
+
+In your webpage, just display your image using :
+
+<img src="http://your.webserver.tld/asset.php?id=YOUR_ASSET_UUID_HERE" width="150" alt="" />
+
+(replacing 150 with ASSET_RESIZE_FIXED_WIDTH from inc/config.php may be a good idea.)
+
+
+--
+A.LM.
+

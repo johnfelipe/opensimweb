@@ -12,9 +12,10 @@
 
 ##################### System #########################
 define("SYSNAME","Opensim Web Map");
-define("SYSURL","http://66.23.236.230/");
+define("SYSURL","http://localhost/");
 define("SYSMAIL","your@email.com");
 
+$osdb = "vtgrid";
 
 $userInventoryURI="http://66.23.236.230:8003/";
 $userAssetURI="http://66.23.236.230:8003/";
@@ -47,8 +48,8 @@ $editor_to_use='fckeditor';
 $ALLOW_ZOOM=TRUE;
 
 //Default StartPoint for Map
-$mapstartX=8000;
-$mapstartY=8000;
+$mapstartX=1000;
+$mapstartY=1000;
 
 //Direction where Info Image has to stay ex.: dr = down right ; dl =down left ; tr = top right ; tl = top left ; c = center 
 $display_marker="dr";
@@ -75,15 +76,15 @@ define("C_OFFLINE_IM_TBL", "offline_msgs");
 define("C_STATS_REGIONS_TBL", "statistics");
 
 //OPENSIM DEFAULT TABLES (NEEDED FOR LOGINSCREEN & MONEY SYSTEM)
-define("C_USERS_TBL","opensim.useraccounts"); // dis one
-define("C_AGENTS_TBL","opensim.agents");
-define("C_REGIONS_TBL","opensim.regions"); // dis one
-define("C_APPEARANCE_TBL", "opensim.avatarappearance");
+define("C_USERS_TBL",$osdb.".useraccounts"); // dis one
+define("C_AGENTS_TBL",$osdb.".agents");
+define("C_REGIONS_TBL",$osdb.".regions"); // dis one
+define("C_APPEARANCE_TBL", $osdb.".avatarappearance");
 
 //GROUPS DEFAULT TABLES (NEEDED FOR THE GROUP PARTS)
-define("G_MEMBERSHIP_TBL", "opensim.osgroupmembership");
-define("G_MEMBERSHIP_ROLES_TBL", "opensim.osgrouprolemembership");
-define("G_NAMES_TBL", "opensim.osgroup");
-define("G_ROLES_TBL", "opensim.osgrouprole");
+define("G_MEMBERSHIP_TBL", $osdb.".osgroupmembership");
+define("G_MEMBERSHIP_ROLES_TBL", $osdb.".osgrouprolemembership");
+define("G_NAMES_TBL", $osdb.".osgroup");
+define("G_ROLES_TBL", $osdb.".osgrouprole");
 
 ?>

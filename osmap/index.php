@@ -4,6 +4,8 @@ define('OSW_IN_SYSTEM', true);
 require_once('../inc/headerless.php');
 include ('config.php');
 
+$osfolder = "C:\opensim";
+
 if((isset($_GET['size']) and $_GET['size'])and($ALLOW_ZOOM==TRUE)){
   if(($_GET['size'] == 32) or ($_GET['size'] == 64) or ($_GET['size'] == 128) or
      ($_GET['size'] == 192) or ($_GET['size'] == 256))
@@ -80,7 +82,7 @@ else if($display_marker=="dr")
 
 
     <?php
-	$filename = "C:\Users\Administrator\Desktop\opensim-0.7.6\bin\maptiles\map-1-".$locX."-".$locY."-objects.jpg";
+	$filename = $osfolder."\bin\maptiles\map-1-".$locX."-".$locY."-objects.jpg";
 	if (file_exists($filename)) 
 	{
 	echo 'var tmp_region_image = new Img("'.$filename.'",'.$size.','.$size.');';

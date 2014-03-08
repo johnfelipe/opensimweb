@@ -1,5 +1,14 @@
+<?php
+if ($hide_sidebars) {
+}else{
+?>
+</div>
+</div>
+<?php
+}
+?>
+</div> <!-- Ends the container div found in header.php -->
 
-</div> <!-- Ends the content div found in header.php -->
 <script type="text/JavaScript">
 $(document).ready(function(){
 	$('.dropdown-toggle').dropdown();

@@ -16,10 +16,6 @@ var $osw;
 		$this->db_type = $db_type;
 		$this->osw->config['db_prefix'] = $db_prefix;
 
-		//if (!define('SYSTEM_INSTALLED')) {
-			//die(SYSTEM_NOT_INSTALLED);
-		//}
-
 		require_once('MySQLie.class.php');
 
 		switch($db_type) {

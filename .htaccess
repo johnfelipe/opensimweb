@@ -1,0 +1,29 @@
+RewriteEngine on
+Options Indexes FollowSymlinks Multiviews
+RewriteBase /
+
+RewriteCond %{QUERY_STRING} u=(.*)
+RewriteRule ^user(.*) profile.php?u=%1
+
+ErrorDocument 403 /error.php
+ErrorDocument 404 /error.php
+ErrorDocument 405 /error.php
+
+# why not come visit me directly?
+# this prevents stoopid cross-site discovery attacks..
+RewriteCond %{THE_REQUEST} \?\ HTTP/ [NC,OR]
+# please stop pretending to be the Googlebot..
+# really, we need a special page for these twats..
+RewriteCond %{QUERY_STRING} \=\|w\| [NC,OR]
+RewriteCond %{THE_REQUEST} etc/passwd [NC,OR]
+RewriteCond %{REQUEST_URI} owssvr\.dll [NC,OR]
+# you can probably work these out..
+RewriteCond %{QUERY_STRING} \=\|w\| [NC,OR]
+RewriteCond %{THE_REQUEST} \/\*\ HTTP/ [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^BackWeb [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^Bandit [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^BatchFTP [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^BecomeBot [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^BlackWidow [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^Net\ Vampire [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Sucker [NC]

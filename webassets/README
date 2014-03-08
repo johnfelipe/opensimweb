@@ -1,0 +1,29 @@
+About WebAssets for OpenSimulator
+-===============================-
+This small set of php functions provide easy access to OpenSimulator
+assets, adding another level of caching, thus limiting load on given
+asset server.
+
+Given current OpenSimulator structure, typical usage ("out of the box") 
+includes web publication of avatar's profile pictures, library and user
+stored textures, region maptiles, user and regions/lands snapshots.
+
+It was updated and tested on Novembre 2008, with following software :
+WebServer :
+ - Apache 2.2.9
+ - Php 5.2.6
+ - imagick 2.2.1 PECL package
+ - ImageMagick 6.4.4
+ running on linux 2.6.24,
+ gentoo 64bits
+
+OpenSimulator AssetServer :
+ - OpenSimulator trunk - revision 7543
+   GridMode over lan.
+ - mono 1.9.1 (deb packages from debian.meebey.net)
+ - (mysql 5.0.32)
+
+Installation
+-==========-
+See included file INSTALL
+

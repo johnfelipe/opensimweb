@@ -7,22 +7,21 @@ class MySQLie {
 
 var $osw;
 
-	function MySQLie($host, $user, $pass, $name, &$osw, $port = false) {
+	function MySQLie($server_name, $username, $password, $name, &$osw, $port = false) {
 	$this->osw = &$osw;
-	$this->host = $host;
-	$this->user = $user;
-	$this->pass = $pass;
-	$this->name = $name;
-	$this->port = $port;
-	$this->connection = ($this->port != false) ? mysqli_connect($this->real_server, $this->user, $this->pass, $this->name, $this->port) : mysqli_connect($this->real_server, $this->user, $this->pass, $this->name);
-		if (mysqli_connect_errno())
-		{
+    $this->server_name = $server_name;
+    $this->username = $username;
+    $this->password = $password;
+    $this->name = $name;
+    $this->port = $port;
+	$this->connection = ($this->port !== false) ? mysqli_connect($this->server_name, $this->username, $this->password, $this->name, $this->port) : mysqli_connect($this->server_name, $this->username, $this->password, $this->name);
+
+		if (mysqli_connect_errno()) {
 		die(mysqli_connect_error());
 		}
 	}
 
-	function result($q,$i,$d)
-	{
+	function result($q,$i,$d) {
 	return mysql_result($q,$i,$d);
 	}
 
