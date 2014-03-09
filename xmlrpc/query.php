@@ -101,7 +101,7 @@ function dir_places_query($method_name, $params, $app_data)
     else
         $category = "";
 
-    $result = $osw->SQL->query("SELECT * FROM parcels WHERE $category " .
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['search_db']}`.parcels WHERE $category " .
             "(parcelname LIKE '%" . mysql_escape_string($text) . "%'" .
             " OR description LIKE '%" . mysql_escape_string($text) . "%')" .
             $type . " ORDER BY $order parcelname" .
@@ -152,7 +152,7 @@ function dir_popular_query($method_name, $params, $app_data)
         $where = " WHERE " . join_terms(" AND ", $terms, False);
 
     //FIXME: Should there be a limit on the number of results?
-    $result = $osw->SQL->query("SELECT * FROM popularplaces" . $where);
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['search_db']}`.popularplaces" . $where);
 
     $data = array();
     while (($row = $osw->SQL->fetch_assoc($result)))
@@ -236,7 +236,7 @@ function dir_land_query($method_name, $params, $app_data)
     if (count($terms) > 0)
         $where = " WHERE " . join_terms(" AND ", $terms, False);
 
-    $sql = "SELECT *, saleprice/area AS lsq FROM parcelsales" . $where .
+    $sql = "SELECT *, saleprice/area AS lsq FROM `{$this->osw->config['search_db']}`.parcelsales" . $where .
                 " ORDER BY " . $order . " LIMIT " .
                 mysql_escape_string($query_start) . ",101";
 
@@ -323,7 +323,7 @@ function dir_events_query($method_name, $params, $app_data)
     if (count($terms) > 0)
         $where = " WHERE " . join_terms(" AND ", $terms, False);
 
-    $sql = "SELECT * FROM events". $where.
+    $sql = "SELECT * FROM `{$this->osw->config['search_db']}`.events". $where.
            " LIMIT " . mysql_escape_string($query_start) . ",101";
 
     $result = $osw->SQL->query($sql);
@@ -407,7 +407,7 @@ function dir_classified_query ($method_name, $params, $app_data)
             $where = " WHERE " . $type . " AND " . $category;
     }
 
-    $sql = "SELECT * FROM classifieds" . $where .
+    $sql = "SELECT * FROM `{$this->osw->config['search_db']}`.classifieds" . $where .
            " ORDER BY priceforlisting DESC" .
            " LIMIT " . mysql_escape_string($query_start) . ",101";
 
@@ -446,7 +446,7 @@ function event_info_query($method_name, $params, $app_data)
 
     $eventID    = $osw->Security->make_safe($req['eventID']);
 
-    $sql =  "SELECT * FROM events WHERE eventID = " .
+    $sql =  "SELECT * FROM `{$this->osw->config['search_db']}`.events WHERE eventID = " .
             mysql_escape_string($eventID);
 
     $result = $osw->SQL->query($sql);
@@ -505,7 +505,7 @@ function classifieds_info_query($method_name, $params, $app_data)
 
     $classifiedID    = $osw->Security->make_safe($req['classifiedID']);
 
-    $sql =  "SELECT * FROM classifieds WHERE classifieduuid = '" .
+    $sql =  "SELECT * FROM `{$this->osw->config['search_db']}`.classifieds WHERE classifieduuid = '" .
             mysql_escape_string($classifiedID). "'";
 
     $result = $osw->SQL->query($sql);

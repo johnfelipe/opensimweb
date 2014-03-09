@@ -29,9 +29,8 @@ var $osw;
 		}
 	}
 
-	function generate_password_hash($psswrd) {
-		$password = md5(md5($psswrd . ":" ));
-		return $password;
+	function generate_password_hash($psswrd, $code) {
+		return sha1(md5($password . $code) . $code);
 	}
 
 	function compare_passwords($input_password, $real_password) {
@@ -43,6 +42,8 @@ var $osw;
 		    return false;
 		}
 	}
+
+	// $code = $this->osw->site->randcode('10');
 
 	function login($user, $pass, $remember) {
 		$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE username = '$user'");
@@ -110,6 +111,13 @@ var $osw;
 		}else{
 			return false;
 		}
+	}
+
+	function id_to_username($user_id) {
+        $user_id = (is_numeric($user_id) && $user_id > 0) ? $user_id : 0;
+        $result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE id = '$user_id'");
+        $row = $this->osw->SQL->fetch_array($result);
+        return $row['username'];
 	}
 }
 ?>

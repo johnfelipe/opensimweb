@@ -1,5 +1,6 @@
 <?php
 $page_title = "Login";
+$hide_sidebars = true;
 define('OSW_IN_SYSTEM', true);
 require_once('inc/header.php');
 

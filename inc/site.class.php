@@ -45,7 +45,7 @@ var $osw;
 		$offset_result = $this->osw->SQL->query("SELECT FLOOR(RAND() * COUNT(*)) AS `offset` FROM `bannerads` WHERE type = '$type'");
 		$offset_row = $this->osw->SQL->fetch_object($offset_result);
 		$offset = $offset_row->offset;
-		$result = $this->osw->SQL->query("SELECT * FROM `bannerads` WHERE type = '$type' LIMIT $offset, 1");
+		$result = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}bannerads` WHERE type = '$type' LIMIT $offset, 1");
 		$row = $this->osw->SQL->fetch_array($result);
 		$id = $row['id'];
 		$linkurl = $row['linkurl'];
@@ -69,7 +69,7 @@ var $osw;
 	}
 
 	function userinfo($user) {
-	$q = $this->osw->SQL->query("SELECT * FROM users WHERE username = '$user' OR id = '$user' ");
+	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE username = '$user' OR id = '$user' ");
 	$r = $this->osw->SQL->fetch_array($q);
 	return $r;
 	}
@@ -104,14 +104,14 @@ var $osw;
 	}
 
 	function commentcount($type, $tid) {
-	$cq = $this->osw->SQL->query("SELECT * FROM comments WHERE type = '$type' AND tid = '$tid'");
+	$cq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}comments` WHERE type = '$type' AND tid = '$tid'");
 	$count = $this->osw->SQL->num_rows($cq);
 	return $count;
 	}
 
 	// needs to be fixed for better customization
 	function sendemail($remail, $esubject, $emessage) {
-	$headers = 'From: messages@littletech.net';
+	$headers = "From: ".$this->osw->config['SiteEmail'];
 	$emailsent = @mail($remail, $esubject, $emessage, $headers);
 		if ($emailsent) {
 		$return = TRUE;
@@ -121,16 +121,16 @@ var $osw;
 	return $return;
 	}
 
-	function disqus($address, $page, $id, $title) {
-	$return = "    <div id=\"disqus_thread\"></div>
+	function disqus($page, $id, $title) {
+	$address = $this->osw->config['SiteAddress'];
+	$return = "<div id=\"disqus_thread\"></div>
     <script type=\"text/javascript\">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = 'littletech'; // required: replace example with your forum shortname
-    	 var disqus_url = '$address/$page$id';
-        var disqus_identifier = '$id $address/$page$id';
+        var disqus_shortname = '".$osw->config['DisqusShortName']."';
+    	 var disqus_url = '".$address."/".$page."".$id."';
+        var disqus_identifier = '".$id." ".$address."/".$page."".$id."';
         var disqus_container_id = 'disqus_thread';
         var disqus_domain = 'disqus.com';
-        var disqus_title = '$title';
+        var disqus_title = '".$title."';
 
         /* * * DON'T EDIT BELOW THIS LINE * * */
         (function() {
@@ -144,42 +144,61 @@ var $osw;
 	return $return;
 	}
 
-	function gplus($address, $page, $id, $title) {
-	$return = "<button
-  class='g-interactivepost btn btn-primary'
-  data-contenturl='https://plus.google.com/pages/'
-  data-contentdeeplinkid='/pages'
-  data-clientid='495349884832.apps.googleusercontent.com'
-  data-cookiepolicy='single_host_origin'
-  data-prefilltext='Engage your users today, create a Google+ page for your business.'
-  data-calltoactionlabel='COMMENT'
-  data-calltoactionurl='http://plus.google.com/pages/create'
-  data-calltoactiondeeplinkid='/pages/comment'>
-  Tell your friends
-</button>";
-	return $return;
-	}
-
-	function selectcomments($address, $page, $id, $title) {
-
-	$disqus = $this->disqus($address, $page, $id, $title);
-	$gplus = $this->gplus($address, $page, $id, $title);
-
+	function selectcomments($page, $id, $title) {
+	$disqus = $this->disqus($page, $id, $title);
 	$return = "
 <ul class='nav nav-tabs'>
-  <li><a href='#ltc' data-toggle='tab'>Little Tech</a></li>
+  <li><a href='#ltc' data-toggle='tab'>".$this->osw->config['GridName']."</a></li>
   <li class='active'><a href='#disqus' data-toggle='tab'>Disqus</a></li>
-  <li><a href='#gp' data-toggle='tab'>G+</a></li>
-  <li><a href='#tw' data-toggle='tab'>Twitter</a></li>
 </ul>
 <div class='tab-content'>
-  <div class='tab-pane fade' id='ltc'>Little Tech's own commenting system coming soon</div>
-  <div class='tab-pane fade in active' id='disqus'>$disqus</div>
-  <div class='tab-pane fade' id='gp'>G Plus commenting coming soon i hope</div>
-  <div class='tab-pane fade' id='tw'>Twitter coming soon</div>
+  <div class='tab-pane fade' id='ltc'>OpenSimWeb's own commenting system coming soon</div>
+  <div class='tab-pane fade in active' id='disqus'>".$disqus."</div>
 </div>
 ";
 	return $return;
+	}
+
+	function getNews($id, $style = "") {
+		if ($id == "0") {
+			$where = "ORDER BY `time` DESC LIMIT 0, 10";
+		}else{
+			$where = "WHERE id = '$id'";
+		}
+		echo "
+		<div class='table-responsive'>
+  			<table class='table table-condensed ".$style."'>
+  				<tr>
+  					<td>
+  					";
+  						$newsq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}news` $where");
+  						while ($r = $this->osw->SQL->fetch_array($newsq)) {
+  							$nid = $r['id'];
+  							$title = $r['title'];
+  							$msg = $r['msg'];
+  							$time = $r['time'];
+  							$poster = $r['poster'];
+  							$date = $this->time2date($time);
+  							$postername = $this->osw->id_to_username($poster);
+  							if ($id == "0") {
+  								echo "
+  								<h4><a href='".$this->osw->config['SiteAddress']."/news.php?id=".$nid."'>".$title."</a></h4><small>".$date."</small><br><hr><br>
+  								";
+  							}else{
+  								echo "
+  								<p><h3>".$title."</h3>".$msg."<br><small>Posted by ".$postername." on ".$date."</small></p>
+  								";
+  							}
+  						}
+  						if ($id == "0") {
+						}else{
+							echo "<p>".$this->selectcomments('news.php?id=', $id, $title)."</p>";
+						}
+  						echo "
+  					</td>
+  				</tr>
+  			</table>
+  		</div>";
 	}
 }
 ?>

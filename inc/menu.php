@@ -10,10 +10,9 @@
       </button>
       <a class="navbar-brand" href="<?php echo $site_address; ?>/index.php"><?php echo $logo; ?>
 		<?php
-		$gridonline = $osw->grid->gridonline();
-		if ($gridonline == TRUE) {
+		if ($osw->grid->gridonline()) {
 			echo "<img src='".$site_address."/img/onlinedot.png' border='0'>";
-		}else if ($gridonline == FALSE || !$gridonline) {
+		}else{
 			echo "<img src='".$site_address."/img/offlinedot.png' border='0'>";
 		}
 		?>
@@ -24,62 +23,54 @@
 		<!-- <li><a href='<?php echo $site_address; ?>/'>Example of a single menu link</a></li> -->
     	<ul class="nav navbar-nav">
 
-			<li><a href='<?php echo $site_address; ?>/market/index.php'>Market</a></li>
-			<li><a href='<?php echo $site_address; ?>/search.php'>Search</a></li>
-
-			<li class='dropdown'>
-				<a href='#' class='dropdown-toggle' data-toggle='dropdown'>Land Rentals <b class='caret'></b></a>
-				<ul class='dropdown-menu'>
-					<li><a href='<?php echo $site_address; ?>/'>Private Land</a></li>
-					<li><a href='<?php echo $site_address; ?>/'>Mainland</a></li>
-					<li><a href='<?php echo $site_address; ?>/'>Self Hosted</a></li>
-				</ul>
-			</li>
-
-			<li class='dropdown'>
-				<a href='#' class='dropdown-toggle' data-toggle='dropdown'>Grid <b class='caret'></b></a>
-				<ul class='dropdown-menu'>
-					<li><a href='<?php echo $site_address; ?>/news.php'>News</a></li>
-					<li><a href='<?php echo $site_address; ?>/map.php'>Map</a></li>
-					<li><a href='<?php echo $site_address; ?>/viewers.php'>Viewers</a></li>
-				</ul>
-			</li>
-
-			<li class='dropdown'>
-				<a href='#' class='dropdown-toggle' data-toggle='dropdown'>Community <b class='caret'></b></a>
-				<ul class='dropdown-menu'>
-					<li><a href='<?php echo $site_address; ?>/forum/'>Forum</a></li>
-				</ul>
-			</li>
-
+    		<?php
+    		$mq = $osw->SQL->query("SELECT * FROM `{$osw->config['db_prefix']}mainmenu` WHERE childof = '0' ORDER BY `sortby` ASC LIMIT 0,100");
+    		while($mr = $osw->SQL->fetch_array($mq)) {
+    			$mid = $mr['id'];
+    			$mname = $mr['name'];
+    			$murl = $mr['url'];
+    			$msq = $osw->SQL->query("SELECT * FROM `{$osw->config['db_prefix']}mainmenu` WHERE childof = '$mid' ORDER BY `sortby` ASC LIMIT 0,100");
+    			$msc = $osw->SQL->num_rows($msq);
+    			if ($msc) {
+    				echo "<li class='dropdown'>
+    						<a href='#' class='dropdown-toggle' data-toggle='dropdown'>".$mname." <b class='caret'></b></a>
+    							<ul class='dropdown-menu'>";
+    							while ($msr = $osw->SQL->fetch_array($msq)) {
+    								$msid = $msr['id'];
+    								$msname = $msr['name'];
+    								$msurl = $msr['url'];
+    								echo "<li><a href='".$site_address."/".$msurl."'>".$msname."</a></li>";
+    							}
+    							echo "</ul>
+									</li>";
+    			}else{
+    				echo "<li><a href='".$site_address."/".$murl."'>".$mname."</a></li>";
+    			}
+    		}
+    		?>
 		</ul>
+		<!-- This shouldnt be in a menu since its part of the system. -->
 		<ul class="nav navbar-nav navbar-right">
 			<?php if ($user) { ?>
-			<li><a href='<?php echo $site_address; ?>/profile.php?u=<?php echo $user_first.".".$user_last;?>'><?php echo $user; ?></a><li>
+			<li class="dropdown">
+				<a href='#' class="dropdown-toggle" data-toggle="dropdown"><?php echo $user; ?> <b class='caret'></b></a>
+				<ul class="dropdown-menu">
+					<li><a href='<?php echo $site_address; ?>/profile.php?u=<?php echo $user_first.".".$user_last;?>'>Profile</a></li>
+          <li class="divider"></li>
+          <?php
+          if ($osw->grid->isAdmin($user_uuid)) {
+          ?>
+          <li><a href='<?php echo $site_address; ?>/admin/settings.php'>Settings</a></li>
+          <?php
+          }else{
+          }
+          ?>
+				</ul>
+			<li>
 			<?php }else{ ?>
 			<li><a href='<?php echo $site_address; ?>/login.php'>Login</a></li>
+			<li><a href='<?php echo $site_address; ?>/register.php'>Register</a></li>
 			<?php } ?>
-		</ul>
-    </div>
-  </div>
-</nav>
-
-<!-- bottom menu -->
-<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
-  <div class="container-fluid">
-  	<div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-2">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <div class="collapse navbar-collapse" id="navbar-collapse-2">
-    	<ul class="nav navbar-nav">
-
-			<li><a href='<?php echo $site_address; ?>/market/index.php'>Market</a></li>
-			<li><a href='<?php echo $site_address; ?>/search.php'>Search</a></li>
 		</ul>
     </div>
   </div>

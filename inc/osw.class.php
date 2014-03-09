@@ -50,6 +50,10 @@ class osw
 		}
 	}
 
+	function id_to_username($user_id) {
+	    return $this->Users->id_to_username($user_id);
+	}
+
 	function redirect($url) {
 		switch ($this->config['redirect_type']) {
 			default:

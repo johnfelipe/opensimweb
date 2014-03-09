@@ -11,6 +11,8 @@ header('Content-Type: text/html; charset=iso-8859-1');
 require_once('osw.class.php');
 $osw = new osw();
 
+date_default_timezone_set($osw->config['TimeZone']);
+
 $ip = $_SERVER['REMOTE_ADDR'];
 $now = time();
 $fiveago = $now - 300;
@@ -110,7 +112,12 @@ if ($hide_sidebars) {
 			echo "<div class='panel'>
   			<div class='panel-heading'><B>Friends</B></div>
   			<div class='panel-body'>";
-  			echo $osw->grid->getFriends('6551271e-fee0-4054-829f-de71252cae93');
+  			echo $osw->grid->getFriends($user_uuid);
+  			echo "</div></div>";
+  			echo "<div class='panel'>
+  			<div class='panel-heading'><B>Groups</B></div>
+  			<div class='panel-body'>";
+  			echo $osw->grid->getGroups($user_uuid);
   			echo "</div></div>";
 		}
 		?>
@@ -118,9 +125,9 @@ if ($hide_sidebars) {
   		 <div class="panel-heading"><B>Social Networks</B></div>
   			<div class="panel-body">
   				<?php
-  				echo "<a href='http://www.twitter.com/@".$twitter."/'>Follow us on Twitter</a>";
+  				echo "<a href='http://www.twitter.com/@".$twitter."'>Follow us on Twitter</a>";
   				echo "<br>";
-  				echo "<a href='http://www.facebook.com/".$facebook."/'>Like us on Facebook</a>";
+  				echo "<a href='http://www.facebook.com/".$facebook."'>Like us on Facebook</a>";
   				?>
 	  		</div>
   		 </div>

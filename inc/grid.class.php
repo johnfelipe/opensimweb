@@ -58,13 +58,30 @@ var $osw;
 	return $c;
 	}
 
+	function isAdmin($uuid) {
+		if ($uuid) {
+			$site_admin_level = $this->osw->config['site_admin_level'];
+			$r = $this->getosuser_by_uuid($uuid);
+			$level = $r['UserLevel'];
+			if ($level == $site_admin_level || $level >= $site_admin_level) {
+				return true;
+			}else if ($level <= $site_admin_level) {
+				return false;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
+
 	function getFriends($uuid) {
 		echo "<div class='table-responsive'>
 		<table class='table table-hover table-condensed'>
 		<thead>
 		<tr>
 		<th><small><B>NAME</B></small></th>
-		<th></small><B>STATUS</B></small></th>
+		<th><small><B>STATUS</B></small></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -92,6 +109,36 @@ var $osw;
 			echo "<tr>
 			<td>".$FriendFirst." ".$FriendLast."</td>
 			<td>".$fon."</td>
+			</tr>
+			";
+		}
+		echo "</tbody>
+		</table>
+		</div>";
+	}
+
+	function getGroups($uuid) {
+		echo "<div class='table-responsive'>
+		<table class='table table-hover table-condensed'>
+		<thead>
+		<tr>
+		<th><small><B>NAME</B></small></th>
+		<th><small><B>MEMBERS</B></small></th>
+		</tr>
+		</thead>
+		<tbody>
+		";
+		$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.os_groups_membership WHERE PrincipalID = '$uuid'");
+		while ($r = $this->osw->SQL->fetch_array($q)) {
+			$GroupID = $r['GroupID'];
+			$q2 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.os_groups_groups WHERE GroupID = '$GroupID'");
+			$q3 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.os_groups_membership WHERE GroupID = '$GroupID'");
+			$r2 = $this->osw->SQL->fetch_array($q2);
+			$r3 = $this->osw->SQL->num_rows($q3);
+			$Name = $r2['Name'];
+			echo "<tr>
+			<td>".$Name."</td>
+			<td>".$r3."</td>
 			</tr>
 			";
 		}
@@ -144,15 +191,16 @@ var $osw;
 
 	function gridonline() {
 		$loginuri = $this->osw->config['loginURI'];
-		$explode = explode(":", $loginuri);
+		$urlrep = str_replace("http://", "", $loginuri);
+		$explode = explode(":", $urlrep);
 		$ip2robust = $explode[0];
 		$port2robust = $explode[1];
 		$fp = @fsockopen($ip2robust, $port2robust, $errno, $errstr, 1);
 		if ($fp) {
-			$return = TRUE;
+			$return = true;
 			fclose($fp);
 		}else{
-			$return = FALSE;
+			$return = false;
 		}
 		return $return;
 	}

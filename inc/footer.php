@@ -2,8 +2,9 @@
 if ($hide_sidebars) {
 }else{
 ?>
-</div>
-</div>
+</div> <!-- ends col-md-8 div found in header.php -->
+
+</div><!-- ends row div found in header.php -->
 <?php
 }
 ?>

@@ -1,5 +1,6 @@
 <?php
 $page_title = "Search";
+$hide_sidebars = true;
 define('OSW_IN_SYSTEM', true);
 require_once('inc/header.php');
 /*** *** *** *** *** ***
@@ -46,15 +47,17 @@ $ADULT = "<span class='label label-danger'>A</span>";
 <form class="form-inline" method="get" action="" role="form">
 <div class="form-group">
     <input type="text" name="search" class="form-control" id="appendedInputButtons" placeholder="<?php echo $placeholder; ?>">
+</div>
+<div class="form-group">
     <select name="type" class="form-control">
-	<option value="" <?php if (!$type) { echo ""; } ?>>Everything</option>
-	<option value="classifieds" <?php if ($type == "classifieds") { echo "$select"; } ?>>Classifieds</option>
-	<option value="destinations" <?php if ($type == "destinations") { echo "$select"; } ?>>Destinations</option>
-	<option value="events" <?php if ($type == "events") { echo "$select"; } ?>>Events</option>
-	<option value="groups" <?php if ($type == "groups") { echo "$select"; } ?>>Groups</option>
-	<option value="4sale" <?php if ($type == "4sale") { echo "$select"; } ?>>Land & Rentals</option>
-	<option value="people" <?php if ($type == "people") { echo "$select"; } ?>>People</option>
-	<option value="places" <?php if ($type == "places") { echo "$select"; } ?>>Places</option>
+	   <option value="" <?php if (!$type) { echo ""; } ?>>Everything</option>
+	   <option value="classifieds" <?php if ($type == "classifieds") { echo "$select"; } ?>>Classifieds</option>
+	   <option value="destinations" <?php if ($type == "destinations") { echo "$select"; } ?>>Destinations</option>
+	   <option value="events" <?php if ($type == "events") { echo "$select"; } ?>>Events</option>
+	   <option value="groups" <?php if ($type == "groups") { echo "$select"; } ?>>Groups</option>
+	   <option value="4sale" <?php if ($type == "4sale") { echo "$select"; } ?>>Land & Rentals</option>
+	   <option value="people" <?php if ($type == "people") { echo "$select"; } ?>>People</option>
+	   <option value="places" <?php if ($type == "places") { echo "$select"; } ?>>Places</option>
     </select>
 </div>
 
@@ -316,7 +319,7 @@ $pic = "<img src='$address/webassets/asset.php?id=$InsigniaID&format=PNG' class=
 }
 
 if ($OpenEnrollment == "1") {
-$join = "<a href='' class='btn btn-success'>JOIN</a>";
+$join = "<a href='secondlife:///app/group/".$GroupID."/join' class='btn btn-success btn-xs'>JOIN</a>";
 }else if ($OpenEnrollment == "0") {
 $join = "Closed to invites only.";
 }
@@ -333,21 +336,25 @@ echo "  <div class='panel panel-default'>
     <div class='panel-heading'>
       <h4 class='panel-title'>
       <a class='accordion-toggle' data-toggle='collapse' data-parent='#accordion' href='#$GroupID'>
-<B>$Name</B>
+<B>$Name</B> $MaturePublish
       </a>
 	</h4>
     </div>
     <div id='$GroupID' class='panel-collapse collapse'>
       <div class='panel-body'>
-$pic
-$MaturePublish
-$Charter
-<br>
-Total Members: $gmcount
-<br>
-Enrollment: $join
-<br>
-<small>Created by $FName $LName</small>
+      <p>
+        $pic
+        $Charter
+      </p>
+      <p>
+        Total Members: $gmcount
+      </p>
+      <p>
+        Enrollment: $join
+      </p>
+      <p>
+        <small>Created by $FName $LName</small>
+      </p>
       </div>
     </div>
   </div>

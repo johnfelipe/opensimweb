@@ -1,3 +1,18 @@
+/*
+Navicat MySQL Data Transfer
+
+Source Server         : localhostWAMP
+Source Server Version : 50612
+Source Host           : localhost:3306
+Source Database       : site
+
+Target Server Type    : MYSQL
+Target Server Version : 50612
+File Encoding         : 65001
+
+Date: 2014-03-09 19:02:06
+*/
+
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
@@ -70,6 +85,35 @@ CREATE TABLE `osw_forum_topic` (
 -- Records of osw_forum_topic
 -- ----------------------------
 INSERT INTO `osw_forum_topic` VALUES ('1', '1', 'Test topic', 'Test message', '1392913592', null);
+
+-- ----------------------------
+-- Table structure for osw_mainmenu
+-- ----------------------------
+DROP TABLE IF EXISTS `osw_mainmenu`;
+CREATE TABLE `osw_mainmenu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `childof` varchar(255) NOT NULL DEFAULT '0',
+  `sortby` varchar(255) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of osw_mainmenu
+-- ----------------------------
+INSERT INTO `osw_mainmenu` VALUES ('1', 'Market', 'market/index.php', '0', '1');
+INSERT INTO `osw_mainmenu` VALUES ('2', 'Search', 'search.php', '0', '2');
+INSERT INTO `osw_mainmenu` VALUES ('3', 'Land Rentals', '', '0', '3');
+INSERT INTO `osw_mainmenu` VALUES ('4', 'Private', '', '3', '1');
+INSERT INTO `osw_mainmenu` VALUES ('5', 'Mainland', '', '3', '2');
+INSERT INTO `osw_mainmenu` VALUES ('6', 'Self Hosted', '', '3', '3');
+INSERT INTO `osw_mainmenu` VALUES ('7', 'Grid', '', '0', '4');
+INSERT INTO `osw_mainmenu` VALUES ('8', 'News', '', '7', '1');
+INSERT INTO `osw_mainmenu` VALUES ('9', 'Map', 'map.php', '7', '2');
+INSERT INTO `osw_mainmenu` VALUES ('10', 'Viewers', 'viewers.php', '7', '3');
+INSERT INTO `osw_mainmenu` VALUES ('11', 'Community', '', '0', '5');
+INSERT INTO `osw_mainmenu` VALUES ('12', 'Forum', 'forum/', '11', '1');
 
 -- ----------------------------
 -- Table structure for osw_market_category
@@ -177,6 +221,25 @@ CREATE TABLE `osw_market_products` (
 INSERT INTO `osw_market_products` VALUES ('1', '1', 'Weapons', 'Your mom', 'This gun is a test of my powerful smite', 'Fart-o-matic, Stink Launcher, Poop exploder', '', 'shit, fuck', 'Christina Vortex', '69', '666', 'C, M', '1');
 
 -- ----------------------------
+-- Table structure for osw_news
+-- ----------------------------
+DROP TABLE IF EXISTS `osw_news`;
+CREATE TABLE `osw_news` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `msg` longtext,
+  `time` varchar(255) DEFAULT NULL,
+  `edit_time` varchar(255) DEFAULT NULL,
+  `poster` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of osw_news
+-- ----------------------------
+INSERT INTO `osw_news` VALUES ('1', 'test', 'testing this shit out', '1394397601', null, '2');
+
+-- ----------------------------
 -- Table structure for osw_sessions
 -- ----------------------------
 DROP TABLE IF EXISTS `osw_sessions`;
@@ -190,6 +253,7 @@ CREATE TABLE `osw_sessions` (
 -- ----------------------------
 -- Records of osw_sessions
 -- ----------------------------
+INSERT INTO `osw_sessions` VALUES ('2', 'pL03UklRkn', '1394404775');
 
 -- ----------------------------
 -- Table structure for osw_settings
@@ -199,39 +263,43 @@ CREATE TABLE `osw_settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
+  `info` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of osw_settings
 -- ----------------------------
-INSERT INTO `osw_settings` VALUES ('1', 'robust_db', 'vtgrid');
-INSERT INTO `osw_settings` VALUES ('2', 'group_db', 'vtgrid');
-INSERT INTO `osw_settings` VALUES ('3', 'profile_db', 'vtgrid');
-INSERT INTO `osw_settings` VALUES ('4', 'webassetURI', 'localhost/webasset');
-INSERT INTO `osw_settings` VALUES ('5', 'GridName', 'Local Grid');
-INSERT INTO `osw_settings` VALUES ('6', 'SiteAddress', 'http://localhost');
-INSERT INTO `osw_settings` VALUES ('7', 'loginURI', '127.0.0.1:9000');
-INSERT INTO `osw_settings` VALUES ('8', 'GridNick', 'LG');
-INSERT INTO `osw_settings` VALUES ('9', 'GridEmail', '@prims.localhost');
-INSERT INTO `osw_settings` VALUES ('10', 'GridMoney', 'OS$');
-INSERT INTO `osw_settings` VALUES ('11', 'cookie_prefix', 'osw');
-INSERT INTO `osw_settings` VALUES ('12', 'cookie_length', '1209600');
-INSERT INTO `osw_settings` VALUES ('13', 'cookie_path', '/');
-INSERT INTO `osw_settings` VALUES ('14', 'cookie_domain', 'localhost');
-INSERT INTO `osw_settings` VALUES ('15', 'logout_redirect', 'index.php');
-INSERT INTO `osw_settings` VALUES ('16', 'activation_type', '1');
-INSERT INTO `osw_settings` VALUES ('17', 'security_image', 'no');
-INSERT INTO `osw_settings` VALUES ('18', 'redirect_type', '1');
-INSERT INTO `osw_settings` VALUES ('19', 'max_password', '15');
-INSERT INTO `osw_settings` VALUES ('20', 'min_password', '6');
-INSERT INTO `osw_settings` VALUES ('21', 'Style', 'Default');
-INSERT INTO `osw_settings` VALUES ('22', 'Banner', null);
-INSERT INTO `osw_settings` VALUES ('23', 'Logo', null);
-INSERT INTO `osw_settings` VALUES ('24', 'search_db', 'vtgrid');
-INSERT INTO `osw_settings` VALUES ('25', 'Twitter', 'Chrisx84');
-INSERT INTO `osw_settings` VALUES ('26', 'Facebook', null);
-INSERT INTO `osw_settings` VALUES ('27', 'min_sales_2b_featured', '10000');
+INSERT INTO `osw_settings` VALUES ('1', 'robust_db', 'vtgrid', 'db name for grid logins');
+INSERT INTO `osw_settings` VALUES ('2', 'group_db', 'vtgrid', 'db name for groups');
+INSERT INTO `osw_settings` VALUES ('3', 'profile_db', 'vtmods', 'db name for profiles');
+INSERT INTO `osw_settings` VALUES ('4', 'search_db', 'vtmods', 'db name for search related data');
+INSERT INTO `osw_settings` VALUES ('5', 'GridName', 'Local Grid', 'Name of your grid');
+INSERT INTO `osw_settings` VALUES ('6', 'SiteAddress', 'http://localhost', 'Site address of this site');
+INSERT INTO `osw_settings` VALUES ('7', 'loginURI', 'http://127.0.0.1:9000', 'Login URL address for users to use to log into your grid');
+INSERT INTO `osw_settings` VALUES ('8', 'GridNick', 'LHG', 'Grid\'s nickname');
+INSERT INTO `osw_settings` VALUES ('9', 'PrimEmail', '@prims.localhost', 'This is used to email in world prims with data');
+INSERT INTO `osw_settings` VALUES ('10', 'GridMoney', 'Lh$', 'Currency icon seen at the top right of most viewers');
+INSERT INTO `osw_settings` VALUES ('11', 'cookie_prefix', 'osw', null);
+INSERT INTO `osw_settings` VALUES ('12', 'cookie_length', '1209600', null);
+INSERT INTO `osw_settings` VALUES ('13', 'cookie_path', '/', null);
+INSERT INTO `osw_settings` VALUES ('14', 'cookie_domain', 'localhost', null);
+INSERT INTO `osw_settings` VALUES ('15', 'logout_redirect', 'index.php', null);
+INSERT INTO `osw_settings` VALUES ('16', 'activation_type', '0', null);
+INSERT INTO `osw_settings` VALUES ('17', 'security_image', 'yes', 'This will make people pass the recaptcha test');
+INSERT INTO `osw_settings` VALUES ('18', 'redirect_type', '1', null);
+INSERT INTO `osw_settings` VALUES ('19', 'max_password', '15', null);
+INSERT INTO `osw_settings` VALUES ('20', 'min_password', '6', null);
+INSERT INTO `osw_settings` VALUES ('21', 'Style', 'Default', 'Bootstrap style for this site. OSW uses the default bootstrap API system. No crappy WP system.');
+INSERT INTO `osw_settings` VALUES ('22', 'Banner', '', null);
+INSERT INTO `osw_settings` VALUES ('23', 'Logo', '', null);
+INSERT INTO `osw_settings` VALUES ('25', 'Twitter', 'Chrisx84', 'The twitter account for this grid.');
+INSERT INTO `osw_settings` VALUES ('26', 'Facebook', '', 'The facebook account for this grid.');
+INSERT INTO `osw_settings` VALUES ('27', 'min_sales_2b_featured', '10000', 'Min. amount of times a product must sell before it can be featured on the main market page');
+INSERT INTO `osw_settings` VALUES ('28', 'site_admin_level', '100', 'Min. OpenSim UserLevel to access admin stuff on this site.');
+INSERT INTO `osw_settings` VALUES ('29', 'DisqusShortName', 'opensimweb', 'For Disqus chat. Best to get a account at disqus.com');
+INSERT INTO `osw_settings` VALUES ('30', 'SiteEmail', 'admin@gridname.com', 'Email address to use to send email to users such as when registering if activation_type is set to User');
+INSERT INTO `osw_settings` VALUES ('31', 'TimeZone', 'America/Toronto', null);
 
 -- ----------------------------
 -- Table structure for osw_users
@@ -242,6 +310,7 @@ CREATE TABLE `osw_users` (
   `PrincipalID` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
+  `salt` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `display` varchar(255) DEFAULT NULL,
@@ -258,5 +327,5 @@ CREATE TABLE `osw_users` (
 -- ----------------------------
 -- Records of osw_users
 -- ----------------------------
-INSERT INTO `osw_users` VALUES ('1', '6551271e-fee0-4054-829f-de71252cae93', 'Admin', '4ac0575c39a0ce5d3c6550471a2fbc4c', '', null, null, 'no', 'yes', null, 'yes', '', '', '');
-INSERT INTO `osw_users` VALUES ('2', '6551271e-fee0-4054-829f-de71252cae93', 'Chrisx84', '11206322662490d8ed6fa7110d34966c', 'xPkwMFhE5n', null, null, 'no', 'yes', null, 'yes', '1394308187', '1394308195', '1394308195');
+INSERT INTO `osw_users` VALUES ('1', '6551271e-fee0-4054-829f-de71252cae93', 'Admin', '21ac27cc099eee15e964d9eaef5dbd00b5b0b05c', 'kRTIJJT6jk', '', null, null, 'no', 'yes', null, 'yes', '', '', '');
+INSERT INTO `osw_users` VALUES ('2', '6551271e-fee0-4054-829f-de71252cae93', 'Chrisx84', '31a9e70597224403989c0b3f493fb88fc3e57868', 'p60lZp2APA', 'pL03UklRkn', null, null, 'no', 'yes', null, 'yes', '1394380389', '1394404775', '1394404775');
