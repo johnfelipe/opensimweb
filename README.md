@@ -1,4 +1,4 @@
-OpenSimWeb - Pre Alpha 0.0.5
+OpenSimWeb - Pre Alpha 0.0.2a
 ==========
 
 Website cms for Opensim

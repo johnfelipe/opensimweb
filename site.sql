@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50612
 File Encoding         : 65001
 
-Date: 2014-03-09 19:02:06
+Date: 2014-03-12 19:49:57
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -253,7 +253,7 @@ CREATE TABLE `osw_sessions` (
 -- ----------------------------
 -- Records of osw_sessions
 -- ----------------------------
-INSERT INTO `osw_sessions` VALUES ('2', 'pL03UklRkn', '1394404775');
+INSERT INTO `osw_sessions` VALUES ('2', 'S4RYRQgWQK', '1394647423');
 
 -- ----------------------------
 -- Table structure for osw_settings
@@ -265,18 +265,18 @@ CREATE TABLE `osw_settings` (
   `value` varchar(255) DEFAULT NULL,
   `info` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of osw_settings
 -- ----------------------------
-INSERT INTO `osw_settings` VALUES ('1', 'robust_db', 'vtgrid', 'db name for grid logins');
-INSERT INTO `osw_settings` VALUES ('2', 'group_db', 'vtgrid', 'db name for groups');
-INSERT INTO `osw_settings` VALUES ('3', 'profile_db', 'vtmods', 'db name for profiles');
-INSERT INTO `osw_settings` VALUES ('4', 'search_db', 'vtmods', 'db name for search related data');
+INSERT INTO `osw_settings` VALUES ('1', 'robust_db', 'opensim', 'db name for grid logins');
+INSERT INTO `osw_settings` VALUES ('2', 'group_db', 'opensim', 'db name for groups');
+INSERT INTO `osw_settings` VALUES ('3', 'profile_db', 'opensim', 'db name for profiles');
+INSERT INTO `osw_settings` VALUES ('4', 'search_db', 'opensim', 'db name for search related data');
 INSERT INTO `osw_settings` VALUES ('5', 'GridName', 'Local Grid', 'Name of your grid');
 INSERT INTO `osw_settings` VALUES ('6', 'SiteAddress', 'http://localhost', 'Site address of this site');
-INSERT INTO `osw_settings` VALUES ('7', 'loginURI', 'http://127.0.0.1:9000', 'Login URL address for users to use to log into your grid');
+INSERT INTO `osw_settings` VALUES ('7', 'loginURI', 'http://localhost:9000', 'Login URL address for users to use to log into your grid');
 INSERT INTO `osw_settings` VALUES ('8', 'GridNick', 'LHG', 'Grid\'s nickname');
 INSERT INTO `osw_settings` VALUES ('9', 'PrimEmail', '@prims.localhost', 'This is used to email in world prims with data');
 INSERT INTO `osw_settings` VALUES ('10', 'GridMoney', 'Lh$', 'Currency icon seen at the top right of most viewers');
@@ -300,6 +300,7 @@ INSERT INTO `osw_settings` VALUES ('28', 'site_admin_level', '100', 'Min. OpenSi
 INSERT INTO `osw_settings` VALUES ('29', 'DisqusShortName', 'opensimweb', 'For Disqus chat. Best to get a account at disqus.com');
 INSERT INTO `osw_settings` VALUES ('30', 'SiteEmail', 'admin@gridname.com', 'Email address to use to send email to users such as when registering if activation_type is set to User');
 INSERT INTO `osw_settings` VALUES ('31', 'TimeZone', 'America/Toronto', null);
+INSERT INTO `osw_settings` VALUES ('32', 'ForceSiteStyle', 'false', null);
 
 -- ----------------------------
 -- Table structure for osw_users
@@ -327,5 +328,5 @@ CREATE TABLE `osw_users` (
 -- ----------------------------
 -- Records of osw_users
 -- ----------------------------
-INSERT INTO `osw_users` VALUES ('1', '6551271e-fee0-4054-829f-de71252cae93', 'Admin', '21ac27cc099eee15e964d9eaef5dbd00b5b0b05c', 'kRTIJJT6jk', '', null, null, 'no', 'yes', null, 'yes', '', '', '');
-INSERT INTO `osw_users` VALUES ('2', '6551271e-fee0-4054-829f-de71252cae93', 'Chrisx84', '31a9e70597224403989c0b3f493fb88fc3e57868', 'p60lZp2APA', 'pL03UklRkn', null, null, 'no', 'yes', null, 'yes', '1394380389', '1394404775', '1394404775');
+INSERT INTO `osw_users` VALUES ('1', '6551271e-fee0-4054-829f-de71252cae93', 'Admin', '6f078e6e93d0c7c5f04c7466d5e65effea07ad57', 'BLtG9jPZLe', '', null, null, 'no', 'yes', null, 'yes', '', '', '');
+INSERT INTO `osw_users` VALUES ('2', '6551271e-fee0-4054-829f-de71252cae93', 'Chrisx84', '9469f30912fe05ce275050f740a6fd2ce1da26ae', 'nmgKrk1PJa', 'S4RYRQgWQK', null, null, 'no', 'yes', null, 'yes', '1394646771', '1394647423', '1394647423');

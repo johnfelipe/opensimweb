@@ -30,11 +30,11 @@ var $osw;
 	}
 
 	function generate_password_hash($psswrd, $code) {
-		return sha1(md5($password . $code) . $code);
+		return sha1(md5($psswrd . $code) . $code);
 	}
 
-	function compare_passwords($input_password, $real_password) {
-        $input_hash = $this->generate_password_hash($input_password);
+	function compare_passwords($input_password, $real_password, $code) {
+        $input_hash = $this->generate_password_hash($input_password, $code);
 
 		if ($input_hash == $real_password) {
 		    return true;
@@ -50,11 +50,12 @@ var $osw;
 		$user_info = $this->osw->SQL->fetch_array($q);
 		$user_id = $user_info['id'];
 		$user_pass = $user_info['password'];
+		$user_code = $user_info['salt'];
 
 		$time = time();
 
 		if ($this->validate_password($pass)) {
-			if ($this->compare_passwords($pass, $user_pass)) {
+			if ($this->compare_passwords($pass, $user_pass, $user_code)) {
 				if ($user_info['blocked'] == 'no') {
 					if ($user_info['active'] == 'yes') {
 						if ($remember == 1) {

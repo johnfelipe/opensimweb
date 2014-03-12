@@ -50,7 +50,7 @@ $os_user_info = $osw->grid->getosuser_by_uuid($user_uuid);
 $user_first = $os_user_info['FirstName'];
 $user_last = $os_user_info['LastName'];
 
-if (!$user_style || $user_style == "site") {
+if (!$user_style || $user_style == "site" || $osw->config['ForceSiteStyle'] == "true") {
 	$style = $osw->config['Style'];
 }else{
 	$style = $user_style;
