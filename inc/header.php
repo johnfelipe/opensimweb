@@ -82,6 +82,8 @@ if ($iste_logo) {
 <link href="<?php echo $site_address; ?>/css/font-awesome.css" rel="stylesheet">
 <link href="<?php echo $site_address; ?>/css/normalize.css" rel="stylesheet">
 
+<script type="text/javascript" src="<?php echo $site_address; ?>/js/jquery.js"></script>
+
 </head>
 <body>
 <style>

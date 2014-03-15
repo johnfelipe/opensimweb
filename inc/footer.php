@@ -22,7 +22,6 @@ $(document).ready(function(){
 });
 </script>
 
-<script src="<?php echo $site_address; ?>/js/jquery.js"></script>
-<script src="<?php echo $site_address; ?>/js/bootstrap.js"></script>
+<script type="text/javascript" src="<?php echo $site_address; ?>/js/bootstrap.js"></script>
 </body>
 </html>
