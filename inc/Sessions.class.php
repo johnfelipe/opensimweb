@@ -30,8 +30,6 @@ var $osw;
 			$this->osw->SQL->query("INSERT INTO `{$this->osw->config['db_prefix']}sessions` (id, code, time) VALUES ('$id','$code','$time')");
 		}
 		
-		$this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}users` SET code = '$code', last_session = '$time', last_login = '$time' WHERE id = '$id'");
-
 		if ($remember == "true") {
 			setcookie($this->osw->config['cookie_prefix'] . 'id', $id, $time + $this->osw->config['cookie_length'], $this->osw->config['cookie_path'], $this->osw->config['cookie_domain']);
 			setcookie($this->osw->config['cookie_prefix'] . 'time', $sha1_time, $time + $this->osw->config['cookie_length'], $this->osw->config['cookie_path'], $this->osw->config['cookie_domain']);
@@ -78,9 +76,8 @@ var $osw;
                     $_SESSION[$this->osw->config['cookie_prefix'] . 'time'] = $sha1_time;
 
                     $this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}sessions` SET time = '$new_time' WHERE id = '$uid'");
-                    $this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}users` SET last_session = '$new_time' WHERE id = '$uid'");
 
-					$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE id = '$uid'");
+					$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE PrincipalID = '$uid'");
                 	$r = $this->osw->SQL->fetch_array($q);
                     foreach ($r as $key => $value) {
 						$this->osw->user_info[$key] = stripslashes($value);

@@ -13,6 +13,15 @@ var $osw;
 		$this->osw = &$osw;
 	}
 
+	function newuuid() {
+	$uuid = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+		mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+		mt_rand( 0, 0x0fff ) | 0x4000,
+		mt_rand( 0, 0x3fff ) | 0x8000,
+		mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
+	return $uuid;
+	}
+
 	function getosuser($FirstName, $LastName) {
 	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$FirstName' AND LastName = '$LastName'");
 	$r = $this->osw->SQL->fetch_array($q);

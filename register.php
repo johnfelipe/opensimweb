@@ -20,13 +20,13 @@ if ($osw->user_info['username']) {
                     break;
             }
 		}else{
-            echo $osw->Users->register_error . "REGISTER_TRY_AGAIN";
+            echo "Registration failed. Please try again.";
 		}
 	}else{
         require_once('register_form.php');
 	}
 }else{
-    echo "REGISTER_ALREADY_LOGGED";
+    echo "You are already logged in.";
 }
 
 require_once('inc/footer.php');

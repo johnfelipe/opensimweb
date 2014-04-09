@@ -253,7 +253,6 @@ CREATE TABLE `osw_sessions` (
 -- ----------------------------
 -- Records of osw_sessions
 -- ----------------------------
-INSERT INTO `osw_sessions` VALUES ('2', 'S4RYRQgWQK', '1394647423');
 
 -- ----------------------------
 -- Table structure for osw_settings
@@ -265,7 +264,7 @@ CREATE TABLE `osw_settings` (
   `value` varchar(255) DEFAULT NULL,
   `info` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of osw_settings
@@ -279,7 +278,7 @@ INSERT INTO `osw_settings` VALUES ('6', 'SiteAddress', 'http://localhost', 'Site
 INSERT INTO `osw_settings` VALUES ('7', 'loginURI', 'http://localhost:9000', 'Login URL address for users to use to log into your grid');
 INSERT INTO `osw_settings` VALUES ('8', 'GridNick', 'LHG', 'Grid\'s nickname');
 INSERT INTO `osw_settings` VALUES ('9', 'PrimEmail', '@prims.localhost', 'This is used to email in world prims with data');
-INSERT INTO `osw_settings` VALUES ('10', 'GridMoney', 'Lh$', 'Currency icon seen at the top right of most viewers');
+INSERT INTO `osw_settings` VALUES ('10', 'GridMoney', 'OS$', 'Currency icon seen at the top right of most viewers');
 INSERT INTO `osw_settings` VALUES ('11', 'cookie_prefix', 'osw', null);
 INSERT INTO `osw_settings` VALUES ('12', 'cookie_length', '1209600', null);
 INSERT INTO `osw_settings` VALUES ('13', 'cookie_path', '/', null);
@@ -293,40 +292,15 @@ INSERT INTO `osw_settings` VALUES ('20', 'min_password', '6', null);
 INSERT INTO `osw_settings` VALUES ('21', 'Style', 'Default', 'Bootstrap style for this site. OSW uses the default bootstrap API system. No crappy WP system.');
 INSERT INTO `osw_settings` VALUES ('22', 'Banner', '', null);
 INSERT INTO `osw_settings` VALUES ('23', 'Logo', '', null);
-INSERT INTO `osw_settings` VALUES ('25', 'Twitter', 'Chrisx84', 'The twitter account for this grid.');
-INSERT INTO `osw_settings` VALUES ('26', 'Facebook', '', 'The facebook account for this grid.');
-INSERT INTO `osw_settings` VALUES ('27', 'min_sales_2b_featured', '10000', 'Min. amount of times a product must sell before it can be featured on the main market page');
-INSERT INTO `osw_settings` VALUES ('28', 'site_admin_level', '100', 'Min. OpenSim UserLevel to access admin stuff on this site.');
-INSERT INTO `osw_settings` VALUES ('29', 'DisqusShortName', 'opensimweb', 'For Disqus chat. Best to get a account at disqus.com');
-INSERT INTO `osw_settings` VALUES ('30', 'SiteEmail', 'admin@gridname.com', 'Email address to use to send email to users such as when registering if activation_type is set to User');
-INSERT INTO `osw_settings` VALUES ('31', 'TimeZone', 'America/Toronto', null);
-INSERT INTO `osw_settings` VALUES ('32', 'ForceSiteStyle', 'false', null);
-
--- ----------------------------
--- Table structure for osw_users
--- ----------------------------
-DROP TABLE IF EXISTS `osw_users`;
-CREATE TABLE `osw_users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `PrincipalID` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `salt` varchar(255) DEFAULT NULL,
-  `code` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `display` varchar(255) DEFAULT NULL,
-  `blocked` char(3) DEFAULT NULL,
-  `active` char(3) DEFAULT NULL,
-  `style` varchar(255) DEFAULT NULL,
-  `online` char(3) DEFAULT 'no',
-  `last_login` varchar(255) DEFAULT NULL,
-  `last_session` varchar(255) DEFAULT NULL,
-  `last_action` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of osw_users
--- ----------------------------
-INSERT INTO `osw_users` VALUES ('1', '6551271e-fee0-4054-829f-de71252cae93', 'Admin', '6f078e6e93d0c7c5f04c7466d5e65effea07ad57', 'BLtG9jPZLe', '', null, null, 'no', 'yes', null, 'yes', '', '', '');
-INSERT INTO `osw_users` VALUES ('2', '6551271e-fee0-4054-829f-de71252cae93', 'Chrisx84', '9469f30912fe05ce275050f740a6fd2ce1da26ae', 'nmgKrk1PJa', 'S4RYRQgWQK', null, null, 'no', 'yes', null, 'yes', '1394646771', '1394647423', '1394647423');
+INSERT INTO `osw_settings` VALUES ('24', 'Twitter', 'Chrisx84', 'The twitter account for this grid.');
+INSERT INTO `osw_settings` VALUES ('25', 'Facebook', '', 'The facebook account for this grid.');
+INSERT INTO `osw_settings` VALUES ('26', 'min_sales_2b_featured', '10000', 'Min. amount of times a product must sell before it can be featured on the main market page');
+INSERT INTO `osw_settings` VALUES ('27', 'site_admin_level', '100', 'Min. OpenSim UserLevel to access admin stuff on this site.');
+INSERT INTO `osw_settings` VALUES ('28', 'DisqusShortName', 'opensimweb', 'For Disqus chat. Best to get a account at disqus.com');
+INSERT INTO `osw_settings` VALUES ('29', 'SiteEmail', 'admin@gridname.com', 'Email address to use to send email to users such as when registering if activation_type is set to User');
+INSERT INTO `osw_settings` VALUES ('30', 'TimeZone', 'America/Toronto', null);
+INSERT INTO `osw_settings` VALUES ('31', 'ForceSiteStyle', 'false', null);
+INSERT INTO `osw_settings` VALUES ('32', 'ReCaptcha_Public_Key', '6LeIfPESAAAAAFi2CxcA24se170xQbiWer2HU9SQ', 'You need your own recaptcha keys here.');
+INSERT INTO `osw_settings` VALUES ('33', 'ReCaptcha_Private_Key', '6LeIfPESAAAAAAzE7TQXXXXnvvUM50DXmHa9vZIR', 'Please visit http://www.google.com/recaptcha to get your own.');
+INSERT INTO `osw_settings` VALUES ('34', 'Default_Female', '', 'Default avatar to copy from when people log in for the first time');
+INSERT INTO `osw_settings` VALUES ('35', 'Default_Male', '', 'Default avatar to copy from when people log in for the first time');
