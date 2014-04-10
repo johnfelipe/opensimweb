@@ -36,7 +36,7 @@ var $osw;
 	}
 
 	function generate_password_hash($psswrd, $code) {
-		return md5(md5($psswrd) . ":" . $code)
+		return md5(md5($psswrd) . ":" . $code);
 	}
 
 	function compare_passwords($input_password, $real_password, $code) {
