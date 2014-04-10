@@ -21,7 +21,14 @@
  *
  * @author Anthony Le Mansec <a.lm@free.fr>
  */
-define('ASSET_SERVER', 'http://127.0.0.1:8003/assets/'); // (OpenSim.ini: asset_server_url . "/assets/")
+
+// The next 4 lines were added by Christopher Strachan for easier integration into OSW.
+define('OSW_IN_SYSTEM', true);
+require_once('../inc/headerless.php');
+$robusturl = $osw->config['loginURI'];
+$asset_address = $robusturl."/assets/";
+
+define('ASSET_SERVER', $asset_address); // (OpenSim.ini: asset_server_url . "/assets/")
 define('ASSET_SERVER_TIMEOUT', 8); // timeout in seconds, to wait while requesting an asset (default to 8)
 define('ASSET_DO_RESIZE', true); // shall we resize picture to width=ASSET_RESIZE_FIXED_WIDTH ?
 define('ASSET_RESIZE_FIXED_WIDTH', 150); // width in pixels
@@ -30,7 +37,7 @@ define('ASSET_RESIZE_FIXED_WIDTH', 150); // width in pixels
 define('ASSET_ID_NOTFOUND', 'cb2052ae-d161-43e9-b11b-c834217823cd');
 
 /* will show following picture for Zero UUID (not found / malformed assets) : */
-define('IMAGE_ID_ZERO', '/var/www/mysite.com/webassets/pic/uuid_zero'); // no extension here
+define('IMAGE_ID_ZERO', '/var/www/webassets/pic/uuid_zero'); // no extension here
 
 define('IMAGE_DEFAULT_FORMAT', 'JPEG');
 

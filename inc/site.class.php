@@ -68,12 +68,6 @@ var $osw;
 	return $return;
 	}
 
-	function userinfo($user) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}users` WHERE username = '$user' OR id = '$user' ");
-	$r = $this->osw->SQL->fetch_array($q);
-	return $r;
-	}
-
 	function useronline($uuid, $address) {
 	$q = $this->osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.GridUser WHERE UserID = '$uuid'");
 	$r = $this->osw->SQL->fetch_array($q);

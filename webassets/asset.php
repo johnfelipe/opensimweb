@@ -27,8 +27,8 @@
  *
  * @author Anthony Le Mansec <a.lm@free.fr>
  */
-require_once('inc/config.php');
-require_once('inc/asset.php');
+require_once('config.php');
+require_once('assetcache.php'); // change to support opensimweb
 
 $format = (isset($_REQUEST['format'])) ? $_REQUEST['format'] : IMAGE_DEFAULT_FORMAT;
 $asset_id = (isset($_REQUEST['id'])) ? $_REQUEST['id'] : ASSET_ID_NOTFOUND;

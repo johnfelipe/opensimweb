@@ -9,7 +9,6 @@ require_once('inc/header.php');
     If you can see this instead of the map then you really need to get a new computer that can handle a better browser like Google Chrome.
    </iframe>
 </div>
-
 <?php
 include ('inc/footer.php');
 ?>

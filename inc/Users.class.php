@@ -30,7 +30,7 @@ var $osw;
 	}
 
 	function generate_password_salt() {
-		$randomuuid = $this->osw->grid->newuuid();
+		$randomuuid = $this->osw->getNewUUID();
 		$strrep = str_replace("-", "", $randomuuid);
 		return md5($strrep);
 	}
@@ -146,6 +146,7 @@ var $osw;
 		$pass = $_POST['password'];
 		$cpass = $_POST['password_c'];
 		$email = $_POST['email'];
+		
 		require_once('recaptchalib.php');
 		$privatekey = $this->osw->config['ReCaptcha_Private_Key'];
 		$resp = recaptcha_check_answer ($privatekey,
@@ -165,7 +166,7 @@ var $osw;
 				if ($pass == $cpass) { // this makes sure that both password feilds are the same
 					if ($this->validate_password($pass)) { // this makes sure the password entered is a valid length.
 						// now we can start processing the registration.
-						$randomuuid = $this->osw->grid->newuuid();
+						$randomuuid = $this->osw->getNewUUID();
 						$salt = $this->generate_password_salt();
 						$hashedpass = $this->generate_password_hash($pass, $salt);
 						$time = time();
@@ -189,6 +190,13 @@ var $osw;
 							}else if ($this->osw->config['Default_Female'] == "" && $this->osw->config['Default_Male'] == ""){
 								$avi = "";
 							}
+
+							if ($avi != "") {
+								// This is where we put copied cloths onto the new resident.
+							}else if (!$avi) {
+								// do nothing since $avi is empty.
+							}
+							return true;
 						}else{
 							return false;
 						}

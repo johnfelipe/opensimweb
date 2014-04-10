@@ -1,4 +1,6 @@
 <?php
+define('OSW_IN_SYSTEM', true);
+require_once('../inc/headerless.php');
 include("config.php");
 include("mysql.php");
 
@@ -37,7 +39,7 @@ function CheckHost($host, $port, $texture)
 
 	$next = time() + (30 * 60); // 30 mins, so we don't get stuck
 
-	$DbLink->query("UPDATE ".C_REGIONS_TBL." set lastseen = $next " .
+	$osw->SQL->query("UPDATE ".C_REGIONS_TBL." set lastseen = $next " .
 			" where serverIP = '" . mysql_escape_string($host) . "' AND ".
 			"serverPort = '" . mysql_escape_string($port) . "' AND ".
 			"regionMapTexture = '".mysql_escape_string($texture) ."'");
@@ -63,13 +65,13 @@ function parse($host,$port, $texture)
 	$next = time() + (30 * 60); // 30 mins, so we don't get stuck
 
 	$DbLink = new DB;
-	$DbLink->query("UPDATE ".C_REGIONS_TBL." set lastseen = ".$next." " .
+	$osw->SQL->query("UPDATE ".C_REGIONS_TBL." set lastseen = ".$next." " .
 			" where serverIP = '" . mysql_escape_string($host) . "' AND ".
 			"serverPort = '" . mysql_escape_string($port) . "' AND ".
 			"regionMapTexture = '".mysql_escape_string($texture) ."'");
 
 	// Get the maptexture out
-	$DbLink->query("SELECT regionMapTexture from ".C_REGIONS_TBL.
+	$osw->SQL->query("SELECT regionMapTexture from ".C_REGIONS_TBL.
 			" where serverIP = '" . mysql_escape_string($host) . "' AND ".
 			"serverPort = '" . mysql_escape_string($port) . "' AND ".
 			"regionMapTexture = '".mysql_escape_string($texture) ."'");
@@ -82,12 +84,12 @@ function parse($host,$port, $texture)
 	// Grabbing the map texure from the region
 	$mapdata = GetURL($buildurl);
 
-	$DbLink->query("SELECT locX, locY from ".C_REGIONS_TBL.
+	$osw->SQL->query("SELECT locX, locY from ".C_REGIONS_TBL.
 			" where serverIP = '" . mysql_escape_string($host) . "' AND ".
 			"serverPort = '" . mysql_escape_string($port) . "' AND ".
 			"regionMapTexture = '".mysql_escape_string($texture) ."'");
 
-	list($regionX,$regionY ) = $DbLink->next_record();
+	list($regionX,$regionY ) = $osw->SQL->next_record();
 
 	$regionX /= 256;
 	$regionY /= 256;
@@ -98,24 +100,24 @@ function parse($host,$port, $texture)
 
 // Adding a clean query to the parser
 
-$DbLink->query("SELECT locX, locY FROM ".C_REGIONS_TBL."");
+$osw->SQL->query("SELECT locX, locY FROM ".C_REGIONS_TBL."");
 
-while(list($locX,$locY) = $DbLink->next_record())
+while(list($locX,$locY) = $osw->SQL->next_record())
 {
-	$DbLink->query("DELETE FROM ".C_REGIONS_TBL." WHERE locX = ".$locX." AND locY = ".$locY."");
+	$osw->SQL->query("DELETE FROM ".C_REGIONS_TBL." WHERE locX = ".$locX." AND locY = ".$locY."");
 	// Removing the dead regions from the opensim regions table as well
 	// 
 	// Uncomment this to remove it from the OpenSim regions table as well
-	// $DbLink->query("DELETE FROM ".C_REGIONS_TBL." WHERE locX = ".$locX." AND locY = ".$locY."");
+	// $osw->SQL->query("DELETE FROM ".C_REGIONS_TBL." WHERE locX = ".$locX." AND locY = ".$locY."");
 }
 
 // Getting 1 region at a time
 
 $query = "SELECT serverIP, serverPort, regionMapTexture FROM ".C_MAP_REGIONS_TBL." WHERE `lastcheck` < ".$now." limit 0,1";
 
-$DbLink->query($query);
+$osw->SQL->query($query);
 
-while(list($serverIP,$serverPort, $mapTexture) = $DbLink->next_record())
+while(list($serverIP,$serverPort, $mapTexture) = $osw->SQL->next_record())
 {
 	CheckHost($serverIP, $serverPort, $mapTexture);
 }

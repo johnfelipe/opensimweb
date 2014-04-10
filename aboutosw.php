@@ -17,6 +17,7 @@ Out of all that hard work and days sitting at his computer listening to Digitall
 <ul>
 	<li>Chrisx84 - Lead dev, creator</li>
 	<li>Talla Adam - Coming up with the name for this CMS</li>
+	<li>Timothy Rogers - Hardware provider, code contributer</li> 
 </ul>
 <h3>Third Party scripts used</h3>
 <ul>

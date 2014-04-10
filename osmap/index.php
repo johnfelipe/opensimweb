@@ -4,8 +4,6 @@ define('OSW_IN_SYSTEM', true);
 require_once('../inc/headerless.php');
 include ('config.php');
 
-$osfolder = "C:\opensim";
-
 if((isset($_GET['size']) and $_GET['size'])and($ALLOW_ZOOM==TRUE)){
   if(($_GET['size'] == 32) or ($_GET['size'] == 64) or ($_GET['size'] == 128) or
      ($_GET['size'] == 192) or ($_GET['size'] == 256))
@@ -45,11 +43,15 @@ function loadmap()
   mapInstance = new WORLDMap(document.getElementById('map-container'), {hasZoomControls: false, hasPanningControls: true});
   mapInstance.centerAndZoomAtWORLDCoord(new XYPoint(<?php echo $mapstartX; ?>,<?php echo $mapstartY; ?>),1);
 <?php
-$tbl1 = $osw->SQL->query("SELECT regionName,locX,locY,owner_uuid FROM ".C_REGIONS_TBL." Order by locX");
-while(list($regionName,$locX,$locY,$owner) = $osw->SQL->fetch_array($tbl1)){
+$tbl1 = $osw->SQL->query("SELECT regionName,locX,locY,owner_uuid,uuid FROM `{$osw->config['sim_db']}`.Regions Order by locX");
+while(list($regionName,$locX,$locY,$owner,$ruuid) = $osw->SQL->fetch_array($tbl1)){
 
-$tbl2 = $osw->SQL->query("SELECT firstname,lastname FROM ".C_USERS_TBL." WHERE PrincipalID='$owner'");
+$tbl2 = $osw->SQL->query("SELECT firstname,lastname FROM `{$osw->config['robust_db']}`.UserAccounts WHERE PrincipalID='$owner'");
 list($firstN,$lastN) = $osw->SQL->fetch_array($tbl2);
+
+$tbl3 = $osw->SQL->query("SELECT * FROM `{$osw->config['sim_db']}`.RegionSettings WHERE regionUUID = '$ruuid'");
+$rdbr = $osw->SQL->fetch_array($tbl3);
+$mapuuid = $rdbr['map_tile_ID'];
 
 $locX /= 256;
 $locY /= 256;
@@ -82,7 +84,7 @@ else if($display_marker=="dr")
 
 
     <?php
-	$filename = $osfolder."\bin\maptiles\map-1-".$locX."-".$locY."-objects.jpg";
+	$filename = $site_address."/webassets/asset.php?id=".$mapuuid;
 	if (file_exists($filename)) 
 	{
 	echo 'var tmp_region_image = new Img("'.$filename.'",'.$size.','.$size.');';

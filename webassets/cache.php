@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with WebAssets for OpenSimulator.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once('inc/config.php');
+require_once('config.php');
 
 /**
  * @brief Checks whether given asset is locally cached in given cache directory.

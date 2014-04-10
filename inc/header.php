@@ -41,7 +41,7 @@ $min_sales_2b_featured = $osw->config['min_sales_2b_featured'];
 $twitter = $osw->config['Twitter'];
 $facebook = $osw->config['Facebook'];
 
-$user_id = $osw->user_info['id'];
+$user_id = $osw->user_info['PrincipalID'];
 $user = $osw->user_info['username'];
 $user_style = $osw->user_info['style'];
 $user_uuid = $osw->user_info['PrincipalID'];

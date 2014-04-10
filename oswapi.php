@@ -4,6 +4,13 @@ require_once('includes/headerless.php');
 
 $t = $qls->Security->make_safe($_GET['t']);
 $u = $qls->Security->make_safe($_GET['u']);
+$uuid = $qls->Security->make_safe($_GET['uuid']);
+
+if ($t == "getpic") {
+	echo $site_address."/webassets/asset.php?id=".$uuid;
+	// to use this just add your OSW site domain followed by /oswapi.php?t=getpic&uuid=UUID to a <img html tag
+	// Then replace UUID with the UUID of the texture you like to show up as a website image.
+}
 
 if ($t == "usercounts") {
 $onlineq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.GridUser WHERE Online = 'TRUE'");
