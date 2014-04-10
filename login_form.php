@@ -30,9 +30,9 @@ margin-top:30px;
 
                     <div class="form-group <?php echo $csshaserror; ?>">
                         <label for="inputUsername <?php echo $csser; ?>" class="col-sm-3 control-label">
-                            Username<br><small>or email</small></label>
+                            FirstName LastName</label>
                         <div class="col-sm-9">
-                            <input type="text" name="username" class="form-control" id="inputUsername <?php echo $csser; ?>" placeholder="Username or Email address" required>
+                            <input type="text" name="username" class="form-control" id="inputUsername <?php echo $csser; ?>" placeholder="FirstName LastName" required>
                         </div>
                     </div>
                     <div class="form-group <?php echo $csshaserror; ?>">
@@ -69,6 +69,6 @@ margin-top:30px;
 <small>
 This website uses cookies to store login information so the system knows its you without forcing you to login all the time.<br>
 By logging in you agree to allow this site place a cookie on your computer.<br>
-Don't worry it doesn't store your password. Just your website id, session id and the time in unix format.<br>
+Don't worry it doesn't store your password. Just your uuid, session id and the time in unix format.<br>
 </small>
 </form>

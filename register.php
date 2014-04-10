@@ -20,7 +20,7 @@ if ($osw->user_info['username']) {
                     break;
             }
 		}else{
-            echo "Registration failed. Please try again.";
+            echo "Registration failed. Please try again. If the problem persist please contact a OpenSimWeb developer.";
 		}
 	}else{
         require_once('register_form.php');

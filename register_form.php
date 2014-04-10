@@ -7,7 +7,7 @@ exit;
 	<legend>
 		Register
 	</legend>
-	<form action="register_process.php" method="post">
+	<form action="register.php" method="post">
 		<input type="hidden" name="process" value="true" />
 <div class="container">
  <div class="row">
@@ -51,15 +51,18 @@ exit;
 		<input type="text" id="InputEmail" name="email" maxlength="100" value="" required />
 		</div>
 	</div>
-
+<?php
+if ($osw->config['Default_Female'] != "" && $osw->config['Default_Male'] != "") {
+?>
 	<div class="form-group">
 		<label for="InputAvi" class="col-sm-3 control-label">Default Avatar</label>
 		<div class="col-sm-9">
-			<input type="radio" id="InputAvi" name="avi" maxlength="100" value="f" required />
-			<input type="radio" id="InputAvi" name="avi" maxlength="100" value="m" required />
+			<input type="radio" id="InputAvi" name="avi" maxlength="100" value="f" required /> Female
+			<input type="radio" id="InputAvi" name="avi" maxlength="100" value="m" required /> Male
 		</div>
 	</div>
 <?php
+}
 /* START SECURITY IMAGE */
 if ($osw->config['security_image'] == 'yes') {
 ?>

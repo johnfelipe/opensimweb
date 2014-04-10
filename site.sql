@@ -264,7 +264,7 @@ CREATE TABLE `osw_settings` (
   `value` varchar(255) DEFAULT NULL,
   `info` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of osw_settings
@@ -302,5 +302,7 @@ INSERT INTO `osw_settings` VALUES ('30', 'TimeZone', 'America/Toronto', null);
 INSERT INTO `osw_settings` VALUES ('31', 'ForceSiteStyle', 'false', null);
 INSERT INTO `osw_settings` VALUES ('32', 'ReCaptcha_Public_Key', '6LeIfPESAAAAAFi2CxcA24se170xQbiWer2HU9SQ', 'You need your own recaptcha keys here.');
 INSERT INTO `osw_settings` VALUES ('33', 'ReCaptcha_Private_Key', '6LeIfPESAAAAAAzE7TQXXXXnvvUM50DXmHa9vZIR', 'Please visit http://www.google.com/recaptcha to get your own.');
-INSERT INTO `osw_settings` VALUES ('34', 'Default_Female', '', 'Default avatar to copy from when people log in for the first time');
-INSERT INTO `osw_settings` VALUES ('35', 'Default_Male', '', 'Default avatar to copy from when people log in for the first time');
+INSERT INTO `osw_settings` VALUES ('34', 'Default_Female', '', 'Default Female avatar name to copy from when people log in for the first time.');
+INSERT INTO `osw_settings` VALUES ('35', 'Default_Male', '', 'Default Male and Female feilds MUST be their name, not UUID key or it wont work.');
+INSERT INTO `osw_settings` VALUES ('36', 'Default_Sim', '', 'Default sim name that all new users will have their home set to and login at.');
+INSERT INTO `osw_settings` VALUES ('37', 'Default_Pos', '<128,128,30>', 'Default position in world. Example: <128,128,30>');

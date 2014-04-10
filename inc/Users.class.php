@@ -58,32 +58,32 @@ var $osw;
 		if (!$lastname) {
 			$lastname = "Resident";
 		}
+
 		$q1 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$firstname' AND LastName = '$lastname'");
 		$r1 = $this->osw->SQL->fetch_array($q1);
 		$userUUID = $r1['PrincipalID'];
+		$userLevel = $r1['UserLevel'];
+
 		$q2 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Auth WHERE UUID = '$userUUID'");
-		$user_info = $this->osw->SQL->fetch_array($q2);
-		$user_pass = $user_info['passwordHash'];
-		$user_code = $user_info['passwordSalt'];
+		$r2 = $this->osw->SQL->fetch_array($q2);
+		$user_pass = $r2['passwordHash'];
+		$user_code = $r2['passwordSalt'];
+
+		$q3 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE UserID = '$userUUID'");
+		$user_info = $this->osw->SQL->fetch_array($q3);
+		$user_info['level'] = $userLevel;
+		$user_info['username'] = $firstname." ".$lastname;
 
 		$time = time();
 
 		if ($this->validate_password($pass)) {
 			if ($this->compare_passwords($pass, $user_pass, $user_code)) {
-				if ($user_info['blocked'] == 'no') {
-					if ($user_info['active'] == 'yes') {
-						if ($remember == 1) {
-							$this->osw->Sessions->create_session($userUUID, "true");
-						}else{
-							$this->osw->Sessions->create_session($userUUID, "false");
-						}
-						return true;
-					}else{
-						return false;
-					}
+				if ($remember == 1) {
+					$this->osw->Sessions->create_session($userUUID, "true");
 				}else{
-					return false;
+					$this->osw->Sessions->create_session($userUUID, "false");
 				}
+				return true;
 			}else{
 				return false;
 			}
@@ -140,7 +140,12 @@ var $osw;
         return $return;
 	}
 
-	function register($first, $last, $pass, $cpass, $email, $avi) {
+	function register_user() {
+		$first = $_POST['firstname'];
+		$last = $_POST['lastname'];
+		$pass = $_POST['password'];
+		$cpass = $_POST['password_c'];
+		$email = $_POST['email'];
 		require_once('recaptchalib.php');
 		$privatekey = $this->osw->config['ReCaptcha_Private_Key'];
 		$resp = recaptcha_check_answer ($privatekey,
@@ -164,9 +169,29 @@ var $osw;
 						$salt = $this->generate_password_salt();
 						$hashedpass = $this->generate_password_hash($pass, $salt);
 						$time = time();
-						// figure out a new way to save resident info here. Like to use the built in REST if possible.
+						$pos = $this->osw->config['Default_Pos'];
+						$simname = $this->osw->config['Default_Sim'];
+						if ($simname) {
+							$simnametouuidq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Regions WHERE regionName = '$simname'");
+							$simnametouuidr = $this->osw->SQL->fetch_array($simnametouuidq);
+							$simuuid = $simnametouuidr['uuid'];
+						}else{
+							$simuuid = "00000000-0000-0000-0000-000000000000";
+						}
 						$insert1 = $this->osw->SQL->query("INSERT INTO `{$this->osw->config['robust_db']}`.UserAccounts (PrincipalID, FirstName, LastName, Email, Created, UserLevel) VALUES ('$randomuuid', '$first', '$last', '$email', '$time', '0')");
 						$insert2 = $this->osw->SQL->query("INSERT INTO `{$this->osw->config['robust_db']}`.Auth (UUID, passwordHash, passwordSalt) VALUES ('$randomuuid', '$hashedpass', '$salt')");
+						$insert3 = $this->osw->SQL->query("INSERT INTO `{$this->osw->config['robust_db']}`.GridUser (UserID, HomeRegionID, HomePosition, LastRegionID, LastPosition) VALUES ('$randomuuid', '$simuuid', '$pos', '$simuuid', '$pos')");
+						if ($insert1 && $insert2 && $insert3) {
+							if ($_POST['avi'] == "m" && $this->osw->config['Default_Male'] != "") {
+								$avi = $this->osw->config['Default_Male'];
+							}else if ($_POST['avi'] == "f" && $this->osw->config['Default_Female'] != "") {
+								$avi = $this->osw->config['Default_Female'];
+							}else if ($this->osw->config['Default_Female'] == "" && $this->osw->config['Default_Male'] == ""){
+								$avi = "";
+							}
+						}else{
+							return false;
+						}
 					}else{
 						return false;
 					}
