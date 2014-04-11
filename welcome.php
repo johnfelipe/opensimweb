@@ -25,7 +25,7 @@ $monthago = $now - 2592000;
 $latestq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.GridUser WHERE Login > '$monthago'");
 $latestc = $osw->SQL->num_rows($latestq);
 
-$regionq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.Regions");
+$regionq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.regions");
 $regionc = $osw->SQL->num_rows($regionq);
 
 $destecho = "";

@@ -36,7 +36,7 @@ var $osw;
 	}
 
 	function generate_password_hash($psswrd, $code) {
-		return md5(md5($psswrd) . ":" . $code);
+		return md5(md5($psswrd).":".$code);
 	}
 
 	function compare_passwords($input_password, $real_password, $code) {
@@ -49,8 +49,6 @@ var $osw;
 		}
 	}
 
-	// $code = $this->osw->site->randcode('10');
-
 	function login($user, $pass, $remember) {
 		$explode = explode(" ", $user);
 		$firstname = $explode[0];
@@ -60,30 +58,35 @@ var $osw;
 		}
 
 		$q1 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$firstname' AND LastName = '$lastname'");
-		$r1 = $this->osw->SQL->fetch_array($q1);
-		$userUUID = $r1['PrincipalID'];
-		$userLevel = $r1['UserLevel'];
+		$n1 = $this->osw->SQL->num_rows($q1);
+		if ($n1) {
+			$r1 = $this->osw->SQL->fetch_array($q1);
+			$userUUID = $r1['PrincipalID'];
+			$userLevel = $r1['UserLevel'];
 
-		$q2 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Auth WHERE UUID = '$userUUID'");
-		$r2 = $this->osw->SQL->fetch_array($q2);
-		$user_pass = $r2['passwordHash'];
-		$user_code = $r2['passwordSalt'];
+			$q2 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.auth WHERE UUID = '$userUUID'");
+			$r2 = $this->osw->SQL->fetch_array($q2);
+			$user_pass = $r2['passwordHash'];
+			$user_code = $r2['passwordSalt'];
 
-		$q3 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE UserID = '$userUUID'");
-		$user_info = $this->osw->SQL->fetch_array($q3);
-		$user_info['level'] = $userLevel;
-		$user_info['username'] = $firstname." ".$lastname;
+			$q3 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE UserID = '$userUUID'");
+			$user_info = $this->osw->SQL->fetch_array($q3);
+			$user_info['level'] = $userLevel;
+			$user_info['username'] = $firstname." ".$lastname;
 
-		$time = time();
+			$time = time();
 
-		if ($this->validate_password($pass)) {
-			if ($this->compare_passwords($pass, $user_pass, $user_code)) {
-				if ($remember == 1) {
-					$this->osw->Sessions->create_session($userUUID, "true");
+			if ($this->validate_password($pass)) {
+				if ($this->compare_passwords($pass, $user_pass, $user_code)) {
+					if ($remember == 1) {
+						$this->osw->Sessions->create_session($userUUID, "true");
+					}else{
+						$this->osw->Sessions->create_session($userUUID, "false");
+					}
+					return true;
 				}else{
-					$this->osw->Sessions->create_session($userUUID, "false");
+					return false;
 				}
-				return true;
 			}else{
 				return false;
 			}
@@ -118,9 +121,6 @@ var $osw;
 		if (!$first) {
 			return false;
 		}
-		if (!$last) {
-			$last = "Resident";
-		}
 		$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$first' AND LastName = '$last'");
 		$r = $this->osw->SQL->fetch_array($q);
 		if ($r['PrincipalID']) {
@@ -136,7 +136,11 @@ var $osw;
         $row = $this->osw->SQL->fetch_array($result);
         $first = $row['FirstName'];
         $last = $row['LastName'];
-        $return = $first." ".$last;
+        if (!$last) {
+        	$return = $first;
+        }else{
+        	$return = $first." ".$last;
+        }
         return $return;
 	}
 
@@ -146,6 +150,10 @@ var $osw;
 		$pass = $_POST['password'];
 		$cpass = $_POST['password_c'];
 		$email = $_POST['email'];
+
+		if (!$last) {
+			$last = "Resident";
+		}
 		
 		require_once('recaptchalib.php');
 		$privatekey = $this->osw->config['ReCaptcha_Private_Key'];
@@ -180,7 +188,7 @@ var $osw;
 							$simuuid = "00000000-0000-0000-0000-000000000000";
 						}
 						$insert1 = $this->osw->SQL->query("INSERT INTO `{$this->osw->config['robust_db']}`.UserAccounts (PrincipalID, FirstName, LastName, Email, Created, UserLevel) VALUES ('$randomuuid', '$first', '$last', '$email', '$time', '0')");
-						$insert2 = $this->osw->SQL->query("INSERT INTO `{$this->osw->config['robust_db']}`.Auth (UUID, passwordHash, passwordSalt) VALUES ('$randomuuid', '$hashedpass', '$salt')");
+						$insert2 = $this->osw->SQL->query("INSERT INTO `{$this->osw->config['robust_db']}`.auth (UUID, passwordHash, passwordSalt) VALUES ('$randomuuid', '$hashedpass', '$salt')");
 						$insert3 = $this->osw->SQL->query("INSERT INTO `{$this->osw->config['robust_db']}`.GridUser (UserID, HomeRegionID, HomePosition, LastRegionID, LastPosition) VALUES ('$randomuuid', '$simuuid', '$pos', '$simuuid', '$pos')");
 						if ($insert1 && $insert2 && $insert3) {
 							if ($_POST['avi'] == "m" && $this->osw->config['Default_Male'] != "") {

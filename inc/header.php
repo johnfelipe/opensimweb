@@ -3,7 +3,7 @@ if (!defined('OSW_IN_SYSTEM')) {
 exit;
 }
 
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL);
 
 session_start();
 header('Content-Type: text/html; charset=iso-8859-1');
@@ -14,6 +14,8 @@ $osw = new osw();
 date_default_timezone_set($osw->config['TimeZone']);
 
 $ip = $_SERVER['REMOTE_ADDR'];
+$thispage = $_SERVER['PHP_SELF'];
+
 $now = time();
 $fiveago = $now - 300;
 
@@ -31,7 +33,6 @@ if ($u) {
 
 $gridname = $osw->config['GridName'];
 $gridnick = $osw->config['GridNick'];
-$ip2webassets = $osw->config['webassetURI'];
 $site_address = $osw->config['SiteAddress'];
 $site_banner = $osw->config['Banner'];
 $site_logo = $osw->config['Logo'];
@@ -41,14 +42,24 @@ $min_sales_2b_featured = $osw->config['min_sales_2b_featured'];
 $twitter = $osw->config['Twitter'];
 $facebook = $osw->config['Facebook'];
 
-$user_id = $osw->user_info['PrincipalID'];
-$user = $osw->user_info['username'];
 $user_style = $osw->user_info['style'];
 $user_uuid = $osw->user_info['PrincipalID'];
-
+$user_id = $user_uuid;
 $os_user_info = $osw->grid->getosuser_by_uuid($user_uuid);
 $user_first = $os_user_info['FirstName'];
 $user_last = $os_user_info['LastName'];
+
+if (!$user_uuid) {
+	$user = "";
+}else if ($user_uuid) {
+	if (!$user_last) {
+		$user = $user_first;
+	}else{
+		$user = $user_first." ".$user_last;
+	}
+}
+
+
 
 if (!$user_style || $user_style == "site" || $osw->config['ForceSiteStyle'] == "true") {
 	$style = $osw->config['Style'];
@@ -56,7 +67,7 @@ if (!$user_style || $user_style == "site" || $osw->config['ForceSiteStyle'] == "
 	$style = $user_style;
 }
 
-if ($iste_logo) {
+if ($site_logo) {
 	$logo = "<img src='" . $site_logo . "' border='0'>";
 }else{
 	$logo = "<B>" . $gridname . "</B>";
@@ -98,7 +109,7 @@ if ($site_banner) {
 	echo "<img src='" . $site_banner . "' border='0'>";
 }
 if ($nomenu) {
-}else{
+}else if (!$nomenu) {
 include ('menu.php');
 }
 

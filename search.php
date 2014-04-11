@@ -4,6 +4,8 @@ $hide_sidebars = true;
 define('OSW_IN_SYSTEM', true);
 require_once('inc/header.php');
 /*** *** *** *** *** ***
+* OSSearch is also required for this page to get search info from your grid.
+* For this to work on your grid add the following line into your Robust.ini or Robust.HG.ini in the [LoginService] section.
 * SearchURL = "http://yourwebsiteaddresshere/ossearch.php?search=[QUERY]"
 *** *** *** *** *** ***/
 
@@ -83,32 +85,32 @@ $ADULT = "<span class='label label-danger'>A</span>";
 <TR VALIGN="top" style="valign: top;">
 <TD ALIGN="left" STYLE="width:150px;">
   <ul class="nav nav-pills nav-stacked">
-<li <?php if (!$type) { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=&m=$m"; ?>">Everything</a></li>
+<li <?php if (!$type) { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=&m=$m"; ?>">Everything</a></li>
 
 
-<li <?php if ($type == "classifieds") { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=classifieds&m=$m"; ?>">Classifieds</a></li>
+<li <?php if ($type == "classifieds") { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=classifieds&m=$m"; ?>">Classifieds</a></li>
 
 
-<li <?php if ($type == "destinations") { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=destinations&m=$m"; ?>">Destinations</a></li>
+<li <?php if ($type == "destinations") { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=destinations&m=$m"; ?>">Destinations</a></li>
 
 
-<li <?php if ($type == "events") { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=events&m=$m"; ?>">Events</a></li>
+<li <?php if ($type == "events") { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=events&m=$m"; ?>">Events</a></li>
 <?php if ($type == "events") { echo $eventcat; } ?>
 
-<li <?php if ($type == "groups") { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=groups&m=$m"; ?>">Groups</a></li>
+<li <?php if ($type == "groups") { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=groups&m=$m"; ?>">Groups</a></li>
 <?php
 if ($type == "groups") {
 echo "Group Test";
 }
 ?>
 
-<li <?php if ($type == "4sale") { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=4sale&m=$m"; ?>">Land & Rentals</a></li>
+<li <?php if ($type == "4sale") { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=4sale&m=$m"; ?>">Land & Rentals</a></li>
 
 
-<li <?php if ($type == "people") { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=people&m=$m"; ?>">People</a></li>
+<li <?php if ($type == "people") { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=people&m=$m"; ?>">People</a></li>
 
 
-<li <?php if ($type == "places") { echo "class='active'"; } ?>><a href="<?php echo "ossearch.php?search=$searchlink&type=places&m=$m"; ?>">Places</a></li>
+<li <?php if ($type == "places") { echo "class='active'"; } ?>><a href="<?php echo $thispage."?search=$searchlink&type=places&m=$m"; ?>">Places</a></li>
 <?php
 if ($type == "places") {
 echo "Test";
@@ -401,7 +403,7 @@ echo "  <div class='panel panel-default'>
 }
 if ($type == "people" || !$type) {
 	echo "<h3>People</h3>";
-$pplq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.useraccounts WHERE FirstName LIKE '%$search%' OR LastName LIKE '%$search%' ORDER BY `Created` ASC LIMIT 0,100");
+$pplq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.UserAccounts WHERE FirstName LIKE '%$search%' OR LastName LIKE '%$search%' ORDER BY `Created` ASC LIMIT 0,100");
 while ($pplnum = $osw->SQL->fetch_array($pplq)) {
 
 $uuid = $pplnum['PrincipalID'];
@@ -469,6 +471,7 @@ echo "  <div class='panel panel-default'>
 $pic
 $fakelife
       </div>
+      <div class='panel-footer'><small><a href='$site_address/profile.php?u=$profname'>View profile</a></small></div>
     </div>
   </div>
 ";

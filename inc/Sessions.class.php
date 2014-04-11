@@ -20,15 +20,16 @@ var $osw;
 		$time = time();
 		$sha1_time = sha1($time);
 
-		$code = $this->osw->site->randcode('10');
+		$code = $this->osw->getNewUUID();
 
 		$sesscheckq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['db_prefix']}sessions` WHERE id = '$id'");
 		$sesschecker = $this->osw->SQL->num_rows($sesscheckq);
 		if ($sesschecker) {
-			$this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}sessions` SET code = '$code', time = '$time' WHERE id = '$id'");
+			$this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}sessions` SET code = '$code', time = '$sha1_time' WHERE id = '$id'");
 		}else{
-			$this->osw->SQL->query("INSERT INTO `{$this->osw->config['db_prefix']}sessions` (id, code, time) VALUES ('$id','$code','$time')");
+			$this->osw->SQL->query("INSERT INTO `{$this->osw->config['db_prefix']}sessions` (id, code, time) VALUES ('$id','$code','$sha1_time')");
 		}
+		$this->osw->SQL->query("UPDATE `{$this->osw->config['robust_db']}`.auth SET webLoginKey = '$code' WHERE UUID = '$id'");
 		
 		if ($remember == "true") {
 			setcookie($this->osw->config['cookie_prefix'] . 'id', $id, $time + $this->osw->config['cookie_length'], $this->osw->config['cookie_path'], $this->osw->config['cookie_domain']);
@@ -75,9 +76,9 @@ var $osw;
 
                     $_SESSION[$this->osw->config['cookie_prefix'] . 'time'] = $sha1_time;
 
-                    $this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}sessions` SET time = '$new_time' WHERE id = '$uid'");
+                    $this->osw->SQL->query("UPDATE `{$this->osw->config['db_prefix']}sessions` SET time = '$sha1_time' WHERE id = '$uid'");
 
-					$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE PrincipalID = '$uid'");
+					$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.auth WHERE webLoginKey = '$ucode'");
                 	$r = $this->osw->SQL->fetch_array($q);
                     foreach ($r as $key => $value) {
 						$this->osw->user_info[$key] = stripslashes($value);
@@ -93,14 +94,14 @@ var $osw;
 	}
 
 	function find_session() {
-		if (isset($_COOKIE[$this->osw->config['cookie_prefix'] . 'id']) && is_numeric($_COOKIE[$this->osw->config['cookie_prefix'] . 'id'])) {
+		if (isset($_COOKIE[$this->osw->config['cookie_prefix'] . 'id'])) {
             $information = array(
                 $_COOKIE[$this->osw->config['cookie_prefix'] . 'id'],
                 $_COOKIE[$this->osw->config['cookie_prefix'] . 'time'],
                 $_COOKIE[$this->osw->config['cookie_prefix'] . 'code']
             );
             return $this->validate_session($information);
-		}else if (isset($_SESSION[$this->osw->config['cookie_prefix'] . 'id']) && is_numeric($_SESSION[$this->osw->config['cookie_prefix'] . 'id'])) {
+		}else if (isset($_SESSION[$this->osw->config['cookie_prefix'] . 'id'])) {
             $information = array(
                 $_SESSION[$this->osw->config['cookie_prefix'] . 'id'],
                 $_SESSION[$this->osw->config['cookie_prefix'] . 'time'],

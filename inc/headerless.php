@@ -3,7 +3,7 @@ if (!defined('OSW_IN_SYSTEM')) {
 exit;
 }
 
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL);
 
 session_start();
 header('Content-Type: text/html; charset=iso-8859-1');
@@ -12,6 +12,8 @@ require_once('osw.class.php');
 $osw = new osw();
 
 $ip = $_SERVER['REMOTE_ADDR'];
+$thispage = $_SERVER['PHP_SELF'];
+
 $now = time();
 $fiveago = $now - 300;
 
@@ -29,6 +31,5 @@ if ($u) {
 
 $gridname = $osw->config['GridName'];
 $gridnick = $osw->config['GridNick'];
-$ip2webassets = $osw->config['webassetURI'];
 $site_address = $osw->config['SiteAddress'];
 ?>

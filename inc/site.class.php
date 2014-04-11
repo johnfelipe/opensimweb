@@ -173,7 +173,7 @@ var $osw;
   							$time = $r['time'];
   							$poster = $r['poster'];
   							$date = $this->time2date($time);
-  							$postername = $this->osw->id_to_username($poster);
+  							$postername = $this->osw->grid->uuid2name($poster);
   							if ($id == "0") {
   								echo "
   								<h4><a href='".$this->osw->config['SiteAddress']."/news.php?id=".$nid."'>".$title."</a></h4><small>".$date."</small><br><hr><br>
@@ -193,6 +193,13 @@ var $osw;
   				</tr>
   			</table>
   		</div>";
+	}
+
+	function displayalert($msg) {
+		return "<div class='alert alert-success alert-dismissable'>
+  				<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+  				".$msg."
+			 </div>";
 	}
 }
 ?>

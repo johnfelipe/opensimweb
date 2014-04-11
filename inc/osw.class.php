@@ -42,16 +42,6 @@ class osw
 
 		$this->Users->validate_login();
 		$this->Sessions->clear_old_sessions();
-
-		if ($this->user_info['username']) {
-			$user_id = $this->user_info['id'];
-			$now = time();
-			$this->SQL->query("UPDATE `{$this->config['db_prefix']}users` SET last_action = '$now' WHERE id = '$user_id'");
-		}
-	}
-
-	function id_to_username($user_id) {
-	    return $this->Users->id_to_username($user_id);
 	}
 
 	function redirect($url) {
