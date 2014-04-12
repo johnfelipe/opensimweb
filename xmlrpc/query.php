@@ -60,8 +60,7 @@ $xmlrpc_server = xmlrpc_server_create();
 # Places Query
 #
 
-xmlrpc_server_register_method($xmlrpc_server, "dir_places_query",
-        "dir_places_query");
+xmlrpc_server_register_method($xmlrpc_server, "dir_places_query", "dir_places_query");
 
 function dir_places_query($method_name, $params, $app_data)
 {
@@ -97,18 +96,14 @@ function dir_places_query($method_name, $params, $app_data)
         $order = "dwell DESC,";
 
     if ($category > 0)
-        $category = "searchcategory = '".mysql_escape_string($category)."' AND ";
+        $category = "searchcategory = '$category' AND ";
     else
         $category = "";
 
-    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['search_db']}`.parcels WHERE $category " .
-            "(parcelname LIKE '%" . mysql_escape_string($text) . "%'" .
-            " OR description LIKE '%" . mysql_escape_string($text) . "%')" .
-            $type . " ORDER BY $order parcelname" .
-            " LIMIT ".(0+$query_start).",101");
+    $result = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.parcels WHERE $category (parcelname LIKE '%$text%' OR description LIKE '%$text%') $type ORDER BY $order parcelname LIMIT $query_start,101");
 
     $data = array();
-    while (($row = $osw->SQL->fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $data[] = array(
                 "parcel_id" => $row["infouuid"],
@@ -130,8 +125,7 @@ function dir_places_query($method_name, $params, $app_data)
 # Popular Place Query
 #
 
-xmlrpc_server_register_method($xmlrpc_server, "dir_popular_query",
-        "dir_popular_query");
+xmlrpc_server_register_method($xmlrpc_server, "dir_popular_query", "dir_popular_query");
 
 function dir_popular_query($method_name, $params, $app_data)
 {
@@ -149,13 +143,13 @@ function dir_popular_query($method_name, $params, $app_data)
 
     $where = "";
     if (count($terms) > 0)
-        $where = " WHERE " . join_terms(" AND ", $terms, False);
+        $where = "WHERE $terms";
 
     //FIXME: Should there be a limit on the number of results?
-    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['search_db']}`.popularplaces" . $where);
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['search_db']}`.popularplaces $where");
 
     $data = array();
-    while (($row = $osw->SQL->fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $data[] = array(
                 "parcel_id" => $row["infoUUID"],
@@ -175,8 +169,7 @@ function dir_popular_query($method_name, $params, $app_data)
 # Land Query
 #
 
-xmlrpc_server_register_method($xmlrpc_server, "dir_land_query",
-        "dir_land_query");
+xmlrpc_server_register_method($xmlrpc_server, "dir_land_query", "dir_land_query");
 
 function dir_land_query($method_name, $params, $app_data)
 {
@@ -215,9 +208,9 @@ function dir_land_query($method_name, $params, $app_data)
         $terms[] = $s;
 
     if ($flags & 0x100000)  //LimitByPrice (1 << 20)
-        $terms[] = "saleprice <= '" . mysql_escape_string($price) . "'";
+        $terms[] = "saleprice <= '$price'";
     if ($flags & 0x200000)  //LimitByArea (1 << 21)
-        $terms[] = "area >= '" . mysql_escape_string($area) . "'";
+        $terms[] = "area >= '$area'";
 
     //The PerMeterSort flag is always passed from a map item query.
     //It doesn't hurt to have this as the default search order.
@@ -236,14 +229,12 @@ function dir_land_query($method_name, $params, $app_data)
     if (count($terms) > 0)
         $where = " WHERE " . join_terms(" AND ", $terms, False);
 
-    $sql = "SELECT *, saleprice/area AS lsq FROM `{$this->osw->config['search_db']}`.parcelsales" . $where .
-                " ORDER BY " . $order . " LIMIT " .
-                mysql_escape_string($query_start) . ",101";
+    $sql = "SELECT * FROM `{$this->osw->config['search_db']}`.parcelsales $where ORDER BY $order LIMIT $query_start,101";
 
     $result = $osw->SQL->query($sql);
 
     $data = array();
-    while (($row = $osw->SQL->fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $data[] = array(
                 "parcel_id" => $row["infoUUID"],
@@ -268,8 +259,7 @@ function dir_land_query($method_name, $params, $app_data)
 # Events Query
 #
 
-xmlrpc_server_register_method($xmlrpc_server, "dir_events_query",
-        "dir_events_query");
+xmlrpc_server_register_method($xmlrpc_server, "dir_events_query", "dir_events_query");
 
 function dir_events_query($method_name, $params, $app_data)
 {
@@ -304,33 +294,30 @@ function dir_events_query($method_name, $params, $app_data)
     //Is $day a number of days (before or after current date)?
     if ($day < 0 || $day > 0)
         $now += $day * (7 * 24 * 60 * 60);
-    $terms[] = "dateUTC > ".$now;
+    $terms = "dateUTC > ".$now;
 
     if ($category <> 0)
-        $terms[] = "category = ".$category."";
+        $cater = "AND category = $category";
 
     $type = array();
     if ($flags & 16777216)  //IncludePG (1 << 24)
-        $type[] = "eventflags = 0";
+        $type = "OR eventflags = 0";
     if ($flags & 33554432)  //IncludeMature (1 << 25)
-        $type[] = "eventflags = 1";
+        $type = "OR eventflags = 1";
     if ($flags & 67108864)  //IncludeAdult (1 << 26)
-        $type[] = "eventflags = 2";
-
-    $terms[] = join_terms(" OR ", $type, True);
+        $type = "OR eventflags = 2";
 
     $where = "";
     if (count($terms) > 0)
-        $where = " WHERE " . join_terms(" AND ", $terms, False);
+        $where = " WHERE $terms $cater $type";
 
-    $sql = "SELECT * FROM `{$this->osw->config['search_db']}`.events". $where.
-           " LIMIT " . mysql_escape_string($query_start) . ",101";
+    $sql = "SELECT * FROM `{$this->osw->config['search_db']}`.events $where LIMIT $query_start,101";
 
     $result = $osw->SQL->query($sql);
 
     $data = array();
 
-    while (($row = $osw->SQL->fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $date = strftime("%m/%d %I:%M %p",$row["dateUTC"]);
 
@@ -355,8 +342,7 @@ function dir_events_query($method_name, $params, $app_data)
 # Classifieds Query
 #
 
-xmlrpc_server_register_method($xmlrpc_server, "dir_classified_query",
-        "dir_classified_query");
+xmlrpc_server_register_method($xmlrpc_server, "dir_classified_query", "dir_classified_query");
 
 function dir_classified_query ($method_name, $params, $app_data)
 {
@@ -407,14 +393,12 @@ function dir_classified_query ($method_name, $params, $app_data)
             $where = " WHERE " . $type . " AND " . $category;
     }
 
-    $sql = "SELECT * FROM `{$this->osw->config['search_db']}`.classifieds" . $where .
-           " ORDER BY priceforlisting DESC" .
-           " LIMIT " . mysql_escape_string($query_start) . ",101";
+    $sql = "SELECT * FROM `{$this->osw->config['search_db']}`.classifieds $where ORDER BY priceforlisting DESC LIMIT $query_start,101";
 
     $result = $osw->SQL->query($sql);
 
     $data = array();
-    while (($row = $osw->SQL->fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $data[] = array(
                 "classifiedid" => $row["classifieduuid"],
@@ -437,8 +421,7 @@ function dir_classified_query ($method_name, $params, $app_data)
 # Events Info Query
 #
 
-xmlrpc_server_register_method($xmlrpc_server, "event_info_query",
-        "event_info_query");
+xmlrpc_server_register_method($xmlrpc_server, "event_info_query", "event_info_query");
 
 function event_info_query($method_name, $params, $app_data)
 {
@@ -446,13 +429,12 @@ function event_info_query($method_name, $params, $app_data)
 
     $eventID    = $osw->Security->make_safe($req['eventID']);
 
-    $sql =  "SELECT * FROM `{$this->osw->config['search_db']}`.events WHERE eventID = " .
-            mysql_escape_string($eventID);
+    $sql =  "SELECT * FROM `{$this->osw->config['search_db']}`.events WHERE eventID = '$eventID'";
 
     $result = $osw->SQL->query($sql);
 
     $data = array();
-    while (($row = $osw->SQL->fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $date = strftime("%G-%m-%d %H:%M:%S",$row["dateUTC"]);
 
@@ -496,8 +478,7 @@ function event_info_query($method_name, $params, $app_data)
 # Classifieds Info Query
 #
 
-xmlrpc_server_register_method($xmlrpc_server, "classifieds_info_query",
-        "classifieds_info_query");
+xmlrpc_server_register_method($xmlrpc_server, "classifieds_info_query", "classifieds_info_query");
 
 function classifieds_info_query($method_name, $params, $app_data)
 {
@@ -505,13 +486,12 @@ function classifieds_info_query($method_name, $params, $app_data)
 
     $classifiedID    = $osw->Security->make_safe($req['classifiedID']);
 
-    $sql =  "SELECT * FROM `{$this->osw->config['search_db']}`.classifieds WHERE classifieduuid = '" .
-            mysql_escape_string($classifiedID). "'";
+    $sql =  "SELECT * FROM `{$this->osw->config['search_db']}`.classifieds WHERE classifieduuid = '$classifiedID'";
 
     $result = $osw->SQL->query($sql);
 
     $data = array();
-    while (($row = $osw->SQL->fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $data[] = array(
                 "classifieduuid" => $row["classifieduuid"],

@@ -1,10 +1,10 @@
 <?php
-define('QUADODO_IN_SYSTEM', true);
-require_once('includes/headerless.php');
+define('OSW_IN_SYSTEM', true);
+require_once('inc/headerless.php');
 
-$t = $qls->Security->make_safe($_GET['t']);
-$u = $qls->Security->make_safe($_GET['u']);
-$uuid = $qls->Security->make_safe($_GET['uuid']);
+$t = $osw->Security->make_safe($_GET['t']);
+$u = $osw->Security->make_safe($_GET['u']);
+$uuid = $osw->Security->make_safe($_GET['uuid']);
 
 if ($t == "getpic") {
 	echo $site_address."/webassets/asset.php?id=".$uuid;
@@ -23,7 +23,7 @@ $monthago = $now - 2592000;
 $latestq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.GridUser WHERE Login > '$monthago'");
 $latestc = $osw->SQL->num_rows($latestq);
 
-$regionq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.Regions");
+$regionq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.regions");
 $regionc = $osw->SQL->num_rows($regionq);
 $array =  array("ONLINE"=>$online,"TOTALUSERS"=>$totalc,"RECENTJOINS"=>$latestc,"REGIONS"=>$regionc);
 echo json_encode($array);

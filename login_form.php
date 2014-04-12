@@ -4,10 +4,15 @@ exit;
 }
 
 $err = $osw->Security->make_safe($_GET['err']);
-if ($err) {
+
+if ($err == "invalidcreds") {
     $csshaserror = "has-error";
     $csser = "inputError1";
     echo "<div class='alert alert-danger'>Your username and/or password are not correct.</div>";
+}else if ($err == "unable2process") {
+    $csshaserror = "has-error";
+    $csser = "inputError1";
+    echo "<div class='alert alert-danger'>Unable to log you in at this time. Please try again later.</div>";
 }else{
     $csshaserror = "";
     $csser = "";

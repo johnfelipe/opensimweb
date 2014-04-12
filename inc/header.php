@@ -22,13 +22,16 @@ $fiveago = $now - 300;
 $u = $osw->Security->make_safe($_GET['u']);
 
 if ($u) {
-	$uexplode = explode(".", $u);
-	$firstname = $uexplode[0];
-	$lastname = $uexplode[1];
-	if (!$lastname) {
-		$lastname = "Resident";
+	$ustrpos = strpos($u, ".");
+	if ($ustrpos === false) {
+		$page_title = $page_title." ".$firstname;
+	}else{
+		$uexplode = explode(".", $u);
+		$firstname = $uexplode[0];
+		$lastname = $uexplode[1];
+		$page_title = $page_title." ".$firstname." ".$lastname;
 	}
-	$page_title = $page_title . "" . $firstname . " " . $lastname;
+}else{
 }
 
 $gridname = $osw->config['GridName'];
@@ -37,40 +40,32 @@ $site_address = $osw->config['SiteAddress'];
 $site_banner = $osw->config['Banner'];
 $site_logo = $osw->config['Logo'];
 $gridmoney = $osw->config['GridMoney'];
+$style = $osw->config['Style'];
 $min_sales_2b_featured = $osw->config['min_sales_2b_featured'];
 
 $twitter = $osw->config['Twitter'];
 $facebook = $osw->config['Facebook'];
 
-$user_style = $osw->user_info['style'];
 $user_uuid = $osw->user_info['PrincipalID'];
 $user_id = $user_uuid;
 $os_user_info = $osw->grid->getosuser_by_uuid($user_uuid);
-$user_first = $os_user_info['FirstName'];
-$user_last = $os_user_info['LastName'];
+$user_first = $osw->user_info['FirstName'];
+$user_last = $osw->user_info['LastName'];
 
 if (!$user_uuid) {
 	$user = "";
 }else if ($user_uuid) {
-	if (!$user_last) {
+	if ($user_last == "Resident") {
 		$user = $user_first;
 	}else{
 		$user = $user_first." ".$user_last;
 	}
 }
 
-
-
-if (!$user_style || $user_style == "site" || $osw->config['ForceSiteStyle'] == "true") {
-	$style = $osw->config['Style'];
-}else{
-	$style = $user_style;
-}
-
 if ($site_logo) {
-	$logo = "<img src='" . $site_logo . "' border='0'>";
+	$logo = "<img src='".$site_logo."' border='0'>";
 }else{
-	$logo = "<B>" . $gridname . "</B>";
+	$logo = "<B>".$gridname."</B>";
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -80,7 +75,7 @@ if ($site_logo) {
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-<title id='titlebar'><?php echo $gridname . " - " . $page_title; ?></title>
+<title id='titlebar'><?php echo $gridname." - ".$page_title; ?></title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -108,12 +103,12 @@ body {
 if ($site_banner) {
 	echo "<img src='" . $site_banner . "' border='0'>";
 }
-if ($nomenu) {
-}else if (!$nomenu) {
+if ($nomenu == "true") {
+}else{
 include ('menu.php');
 }
 
-if ($hide_sidebars) {
+if ($hide_sidebars == "true") {
 }else{
 ?>
 <div class="row">
@@ -121,7 +116,7 @@ if ($hide_sidebars) {
   	<div class="row">
 		<div class="col-md-6">
 		<?php
-		if ($user) {
+		if ($user_uuid) {
 			echo "<div class='panel'>
   			<div class='panel-heading'><B>Friends</B></div>
   			<div class='panel-body'>";
@@ -138,9 +133,12 @@ if ($hide_sidebars) {
   		 <div class="panel-heading"><B>Social Networks</B></div>
   			<div class="panel-body">
   				<?php
-  				echo "<a href='http://www.twitter.com/@".$twitter."'>Follow us on Twitter</a>";
-  				echo "<br>";
-  				echo "<a href='http://www.facebook.com/".$facebook."'>Like us on Facebook</a>";
+  				if ($twitter) {
+	  				echo "<a href='http://www.twitter.com/@".$twitter."'>Follow us on Twitter</a><br>";
+  				}
+  				if ($facebook) {
+	  				echo "<a href='http://www.facebook.com/".$facebook."'>Like us on Facebook</a>";
+  				}
   				?>
 	  		</div>
   		 </div>

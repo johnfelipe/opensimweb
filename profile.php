@@ -6,6 +6,8 @@ require_once('inc/header.php');
 
 $u = $osw->Security->make_safe($_GET['u']);
 
+$ip2webassets = $site_address."/webassets";
+
 if ($u) {
 	$uexplode = explode(".", $u);
 	$firstname = $uexplode[0];
@@ -15,7 +17,7 @@ if ($u) {
 	}
 }
 
-$uq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.useraccounts WHERE FirstName = '$firstname' AND LastName = '$lastname'");
+$uq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$firstname' AND LastName = '$lastname'");
 $ur = $osw->SQL->fetch_array($uq);
 $uuid = $ur['PrincipalID'];
 $reztime = $ur['Created'];
@@ -44,34 +46,41 @@ if ($lastname == "Resident") {
 	$displayname = $firstname . " " . $lastname;
 }
 
-if ($partner) {
-	$partnerq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.useraccounts WHERE PrincipalID = '$partner'");
+if (!$partner || $partner == "00000000-0000-0000-0000-000000000000") {
+	$partnername = "None";
+}else{
+	$partnerq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.UserAccounts WHERE PrincipalID = '$partner'");
 	$partnerr = $osw->SQL->fetch_array($partnerq);
 	$partnerFirstName = $partnerr['FirstName'];
 	$partnerLastName = $partnerr['LastName'];
 	if ($partnerLastName == "Resident") {
 		$pname = $partnerFirstName;
+		$pdname = $partnerFirstName;
 	}else{
-		$pname = $partnerFirstName . "." . $partnerLastName;
+		$pname = $partnerFirstName.".".$partnerLastName;
+		$pdname = $partnerFirstName." ".$partnerLastName;
 	}
-	$partnername = "<a href='osprofile.php?u=" . $pname . "'>" . $pname . "</a>";
-}else{
-	$partnername = "None";
+	$partnername = "<a href='osprofile.php?u=".$pname."'>".$pdname."</a>";
 }
 
 if (!$flpic || $flpic == "00000000-0000-0000-0000-000000000000") {
-$picflpic = "<img src='$ip2webassets/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=PNG' class='pull-left' width='75' height='75'>";
+$picflpic = "<img src='".$ip2webassets."/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=JPG' class='pull-left' width='75' height='75'>";
 }else{
-$picflpic = "<img src='$ip2webassets/asset.php?id=$flpic&format=PNG' class='pull-left' width='75' height='75'>";
+$picflpic = "<img src='".$ip2webassets."/asset.php?id=".$flpic."&format=JPG' class='pull-left' width='75' height='75'>";
 }
 
 if (!$rlpic || $rlpic == "00000000-0000-0000-0000-000000000000") {
-$picrlpic = "<img src='$ip2webassets/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=PNG' class='pull-left' width='75' height='75'>";
+$picrlpic = "<img src='".$ip2webassets."/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=JPG' class='pull-left' width='75' height='75'>";
 }else{
-$picrlpic = "<img src='$ip2webassets/asset.php?id=$rlpic&format=PNG' class='pull-left' width='75' height='75'>";
+$picrlpic = "<img src='".$ip2webassets."/asset.php?id=".$rlpic."&format=JPG' class='pull-left' width='75' height='75'>";
 }
 
-$about = "<B>Title</B><br>" . $usertitle . "<hr><B>Biography</B><br>" . $fakeaboutme . "<hr><B>Partner</B><br>" . $partnername . "<hr><B>" . $grid_name . " Birthday</B><br>" . $rezday;
+$about = "<B>Title</B><br>".$usertitle."<hr>
+<B>Biography</B><br>".$fakeaboutme."<hr>
+<B>Partner</B><br>".$partnername."<hr>
+<B>".$gridname." Birthday</B><br>".$rezday."<hr>
+<B>Real Life</B><br>".$realaboutme."<hr>
+<B>Real Life Picture</B><br>".$picrlpic;
 
 	$displaypicks = "";
 	$pickq = $osw->SQL->query("SELECT * FROM `{$osw->config['profile_db']}`.userpicks WHERE creatoruuid = '$uuid' ORDER BY 'sortorder' ASC LIMIT 0,100");
@@ -83,9 +92,9 @@ $about = "<B>Title</B><br>" . $usertitle . "<hr><B>Biography</B><br>" . $fakeabo
 		$pickinfo = $pickr['description'];
 		$pickpic = $pickr['snapshotuuid'];
 		if (!$pickpic || $pickpic == "00000000-0000-0000-0000-000000000000") {
-			$pickpic = "<img src='$ip2webassets/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=PNG' class='pull-left' width='75' height='75'>";
+			$pickpic = "<img src='".$ip2webassets."/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=PNG' class='pull-left' width='75' height='75'>";
 		}else{
-			$pickpic = "<img src='$ip2webassets/asset.php?id=$pickpic&format=PNG' class='pull-left' width='75' height='75'>";
+			$pickpic = "<img src='".$ip2webassets."/asset.php?id=".$pickpic."&format=PNG' class='pull-left' width='75' height='75'>";
 		}
 		$displaypicks .= $pickpic . "<br><a href=''><B>$pickname</B></a><br>$pickinfo<hr>";
 	}
@@ -100,9 +109,9 @@ $about = "<B>Title</B><br>" . $usertitle . "<hr><B>Biography</B><br>" . $fakeabo
 		$groupinfo = $groupgr['Charter'];
 		$grouppic = $groupgr['InsigniaID'];
 		if (!$grouppic || $grouppic == "00000000-0000-0000-0000-000000000000") {
-			$grouppic = "<img src='$ip2webassets/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=PNG' class='pull-left' width='75' height='75'>";
+			$grouppic = "<img src='".$ip2webassets."/asset.php?id=243e3d7b-66ac-47f0-aca9-74bb932c2404&format=PNG' class='pull-left' width='75' height='75'>";
 		}else{
-			$grouppic = "<img src='$ip2webassets/asset.php?id=$grouppic&format=PNG' class='pull-left' width='75' height='75'>";
+			$grouppic = "<img src='".$ip2webassets."/asset.php?id=".$grouppic."&format=PNG' class='pull-left' width='75' height='75'>";
 		}
 		$displaygroups .= $grouppic . "<br><a href=''><B>$groupname</B></a><br>$groupinfo<hr>";
 	}

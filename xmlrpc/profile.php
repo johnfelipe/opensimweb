@@ -1,17 +1,12 @@
 <?PHP
-$dbName = "vtmods";
-$dbHost = "localhost";
-$dbUser = "root";
-$dbPassword ="";
- 
-mysql_connect ($dbHost,$dbUser,$dbPassword);
-mysql_select_db ($dbName);
- 
+// Modified by Christopher Strachan to work with opensimweb
+define('OSW_IN_SYSTEM', true);
+require_once('../inc/headerless.php');
+
 $zeroUUID = "00000000-0000-0000-0000-000000000000";
 $xmlrpc_server = xmlrpc_server_create();
  
-xmlrpc_server_register_method($xmlrpc_server, "avatarclassifiedsrequest",
-        "avatarclassifiedsrequest");
+xmlrpc_server_register_method($xmlrpc_server, "avatarclassifiedsrequest", "avatarclassifiedsrequest");
  
 function avatarclassifiedsrequest($method_name, $params, $app_data)
 {
@@ -20,12 +15,11 @@ function avatarclassifiedsrequest($method_name, $params, $app_data)
     $uuid           = $req['uuid'];
  
  
-    $result = mysql_query("SELECT * FROM profile_classifieds WHERE ".
-            "creatoruuid = '". mysql_escape_string($uuid) ."'");
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_classifieds WHERE creatoruuid = '$uuid'");
  
     $data = array();
  
-    while (($row = mysql_fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $data[] = array(
                 "classifiedid" => $row["classifieduuid"],
@@ -39,14 +33,10 @@ function avatarclassifiedsrequest($method_name, $params, $app_data)
  
     print $response_xml;
 }
- 
- 
- 
- 
+
 # Classifieds Update
  
-xmlrpc_server_register_method($xmlrpc_server, "classified_update",
-        "classified_update");
+xmlrpc_server_register_method($xmlrpc_server, "classified_update", "classified_update");
  
 function classified_update($method_name, $params, $app_data)
 {
@@ -69,10 +59,9 @@ function classified_update($method_name, $params, $app_data)
     $priceforlist   = $req['classifiedPrice'];
  
     // Check if we already have this one in the database
-    $check = mysql_query("SELECT COUNT(*) FROM profile_classifieds WHERE ".
-            "classifieduuid = '". mysql_escape_string($classifieduuid) ."'");
+    $check = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_classifieds WHERE classifieduuid = '$classifieduuid'");
  
-    while ($row = mysql_fetch_row($check))
+    while ($row = $osw->SQL->num_rows($check))
     {
         $ready = $row[0];
     }
@@ -103,25 +92,10 @@ function classified_update($method_name, $params, $app_data)
             $expirationdate = time() + (365 * 24 * 60 * 60);
         }
  
-        $insertquery = "INSERT INTO profile_classifieds VALUES ".
-            "('". mysql_escape_string($classifieduuid) ."',".
-            "'". mysql_escape_string($creator) ."',".
-            "". mysql_escape_string($creationdate) .",".
-            "". mysql_escape_string($expirationdate) .",".
-            "'". mysql_escape_string($category) ."',".
-            "'". mysql_escape_string($name) ."',".
-            "'". mysql_escape_string($description) ."',".
-            "'". mysql_escape_string($parceluuid) ."',".
-            "". mysql_escape_string($parentestate) .",".
-            "'". mysql_escape_string($snapshotuuid) ."',".
-            "'". mysql_escape_string($simname) ."',".
-            "'". mysql_escape_string($globalpos) ."',".
-            "'". mysql_escape_string($parcelname) ."',".
-            "". mysql_escape_string($classifiedflag) .",".
-            "". mysql_escape_string($priceforlist) .")";
+        $insertquery = "INSERT INTO `{$this->osw->config['profile_db']}`.profile_classifieds VALUES ('$classifieduuid', '$creator', '$creationdate', '$expirationdate', '$category', '$name', '$description', '$parceluuid', '$parentestate', '$snapshotuuid', '$simname', '$globalpos', '$parcelname', '$classifiedflag', '$priceforlist')";
  
         // Create a new record for this classified
-        $result = mysql_query($insertquery);
+        $result = $osw->SQL->query($insertquery);
     }
     else
     {
@@ -135,16 +109,10 @@ function classified_update($method_name, $params, $app_data)
  
     print $response_xml;
 }
- 
- 
- 
- 
- 
- 
+
 # Classifieds Delete
  
-xmlrpc_server_register_method($xmlrpc_server, "classified_delete",
-        "classified_delete");
+xmlrpc_server_register_method($xmlrpc_server, "classified_delete", "classified_delete");
  
 function classified_delete($method_name, $params, $app_data)
 {
@@ -152,8 +120,7 @@ function classified_delete($method_name, $params, $app_data)
  
     $classifieduuid = $req['classifiedID'];
  
-    $result = mysql_query("DELETE FROM profile_classifieds WHERE ".
-            "classifieduuid = '".mysql_escape_string($classifieduuid) ."'");
+    $result = $osw->SQL->query("DELETE FROM `{$this->osw->config['profile_db']}`.profile_classifieds WHERE classifieduuid = '$classifieduuid'");
  
     $response_xml = xmlrpc_encode(array(
         'success' => True,
@@ -162,13 +129,7 @@ function classified_delete($method_name, $params, $app_data)
  
     print $response_xml;
 }
- 
- 
- 
- 
- 
- 
- 
+
 #
 # Picks
 #
@@ -182,9 +143,9 @@ function avatarpicksrequest($method_name, $params, $app_data)
     $req            = $params[0];
     $uuid           = $req['uuid'];
     $data = array();
-    $result = mysql_query("SELECT `pickuuid`,`name` FROM profile_picks WHERE ". "creatoruuid = '". mysql_escape_string($uuid) ."'");
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_picks WHERE creatoruuid = '$uuid'");
  
-    while (($row = mysql_fetch_assoc($result)))
+    while ($row = $osw->SQL->fetch_array($result))
     {
         $data[] = array(
                 "pickid" => $row["pickuuid"],
@@ -201,8 +162,7 @@ function avatarpicksrequest($method_name, $params, $app_data)
  
 # Request Picks for User
  
-xmlrpc_server_register_method($xmlrpc_server, "pickinforequest",
-        "pickinforequest");
+xmlrpc_server_register_method($xmlrpc_server, "pickinforequest", "pickinforequest");
  
 function pickinforequest($method_name, $params, $app_data)
 {
@@ -213,14 +173,9 @@ function pickinforequest($method_name, $params, $app_data)
  
     $data = array();
  
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_picks WHERE creatoruuid = '$uuid' AND pickuuid = '$pick'");
  
- 
- 
-    $result = mysql_query("SELECT * FROM profile_picks WHERE ".
-            "creatoruuid = '". mysql_escape_string($uuid) ."' AND ".
-            "pickuuid = '". mysql_escape_string($pick) ."'");
- 
-    $row = mysql_fetch_assoc($result);
+    $row = $osw->SQL->fetch_array($result);
     if ($row != False)
     {
         if ($row["description"] == null || $row["description"] == "")
@@ -252,8 +207,7 @@ function pickinforequest($method_name, $params, $app_data)
  
 # Picks Update
  
-xmlrpc_server_register_method($xmlrpc_server, "picks_update",
-        "picks_update");
+xmlrpc_server_register_method($xmlrpc_server, "picks_update", "picks_update");
  
 function picks_update($method_name, $params, $app_data)
 {
@@ -281,10 +235,9 @@ function picks_update($method_name, $params, $app_data)
         $description = "No Description";
  
     // Check if we already have this one in the database
-    $check = mysql_query("SELECT COUNT(*) FROM profile_picks WHERE ".
-            "pickuuid = '". mysql_escape_string($pickuuid) ."'");
+    $check = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_picks WHERE  pickuuid = '$pickuuid'");
  
-    $row = mysql_fetch_row($check);
+    $row = $osw->SQL->num_rows($check);
  
     if ($row[0] == 0)
     {
@@ -295,38 +248,20 @@ function picks_update($method_name, $params, $app_data)
         //profile pick when a new profile pick is being created.
         $original = $name;
  
-        $query = "INSERT INTO profile_picks VALUES ".
-            "('". mysql_escape_string($pickuuid) ."',".
-            "'". mysql_escape_string($creator) ."',".
-            "'". mysql_escape_string($toppick) ."',".
-            "'". mysql_escape_string($parceluuid) ."',".
-            "'". mysql_escape_string($name) ."',".
-            "'". mysql_escape_string($description) ."',".
-            "'". mysql_escape_string($snapshotuuid) ."',".
-            "'". mysql_escape_string($user) ."',".
-            "'". mysql_escape_string($original) ."',".
-            "'". mysql_escape_string($simname) ."',".
-            "'". mysql_escape_string($posglobal) ."',".
-            "'". mysql_escape_string($sortorder) ."',".
-            "'". mysql_escape_string($enabled) ."')";
+        $query = "INSERT INTO `{$this->osw->config['profile_db']}`.profile_picks VALUES ('$pickuuid','$creator','$toppick','$parceluuid','$name','$description','$snapshotuuid','$user','$original','$simname','$posglobal','$sortorder','$enabled')";
     }
     else
     {
-        $query = "UPDATE profile_picks SET " .
-            "parceluuid = '". mysql_escape_string($parceluuid) . "', " .
-            "name = '". mysql_escape_string($name) . "', " .
-            "description = '". mysql_escape_string($description) . "', " .
-            "snapshotuuid = '". mysql_escape_string($snapshotuuid) . "' WHERE ".
-            "pickuuid = '". mysql_escape_string($pickuuid) ."'";
+        $query = "UPDATE `{$this->osw->config['profile_db']}`.profile_picks SET parceluuid = '$parceluuid', name = '$name', description = '$description', snapshotuuid = '$snapshotuuid' WHERE pickuuid = '$pickuuid'";
     }
  
-    $result = mysql_query($query);
+    $result = $osw->SQL->query($query);
     if ($result != False)
         $result = True;
  
     $response_xml = xmlrpc_encode(array(
         'success' => $result,
-        'errorMessage' => mysql_error()
+        'errorMessage' => "MySQLi Error"
     ));
  
     print $response_xml;
@@ -334,8 +269,7 @@ function picks_update($method_name, $params, $app_data)
  
 # Picks Delete
  
-xmlrpc_server_register_method($xmlrpc_server, "picks_delete",
-        "picks_delete");
+xmlrpc_server_register_method($xmlrpc_server, "picks_delete", "picks_delete");
  
 function picks_delete($method_name, $params, $app_data)
 {
@@ -343,8 +277,7 @@ function picks_delete($method_name, $params, $app_data)
  
     $pickuuid       = $req['pick_id'];
  
-    $result = mysql_query("DELETE FROM profile_picks WHERE ".
-            "pickuuid = '".mysql_escape_string($pickuuid) ."'");
+    $result = $osw->SQL->query("DELETE FROM `{$this->osw->config['profile_db']}`.profile_picks WHERE pickuuid = '$pickuuid'");
  
     if ($result != False)
         $result = True;
@@ -360,12 +293,9 @@ function picks_delete($method_name, $params, $app_data)
 #
 # Notes
 #
- 
 # Avatar Notes Request
- 
- 
-xmlrpc_server_register_method($xmlrpc_server, "avatarnotesrequest",
-        "avatarnotesrequest");
+
+xmlrpc_server_register_method($xmlrpc_server, "avatarnotesrequest", "avatarnotesrequest");
  
 function avatarnotesrequest($method_name, $params, $app_data)
 {
@@ -374,15 +304,13 @@ function avatarnotesrequest($method_name, $params, $app_data)
     $uuid           = $req['avatar_id'];
     $targetuuid     = $req['uuid'];
  
-    $result = mysql_query("SELECT notes FROM profile_notes WHERE ".
-            "useruuid = '". mysql_escape_string($uuid) ."' AND ".
-            "targetuuid = '". mysql_escape_string($targetuuid) ."'");
- 
-    $row = mysql_fetch_row($result);
-    if ($row == False)
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_notes WHERE useruuid = '$uuid' AND targetuuid = '$targetuuid'");
+    $num = $osw->SQL->num_rows($result);
+    $row = $osw->SQL->fetch_array($result);
+    if (!$num)
         $notes = "";
     else
-        $notes = $row[0];
+        $notes = $row['notes'];
  
     $data[] = array(
             "targetid" => $targetuuid,
@@ -398,8 +326,7 @@ function avatarnotesrequest($method_name, $params, $app_data)
  
 # Avatar Notes Update
  
-xmlrpc_server_register_method($xmlrpc_server, "avatar_notes_update",
-        "avatar_notes_update");
+xmlrpc_server_register_method($xmlrpc_server, "avatar_notes_update", "avatar_notes_update");
  
 function avatar_notes_update($method_name, $params, $app_data)
 {
@@ -411,39 +338,29 @@ function avatar_notes_update($method_name, $params, $app_data)
  
     // Check if we already have this one in the database
  
-    $check = mysql_query("SELECT COUNT(*) FROM profile_notes WHERE ".
-            "useruuid = '". mysql_escape_string($uuid) ."' AND ".
-            "targetuuid = '". mysql_escape_string($targetuuid) ."'");
+    $check = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_notes WHERE useruuid = '$uuid' AND targetuuid = '$targetuuid'");
+    $num = $osw->SQL->num_rows($check);
+    $row = $osw->SQL->fetch_array($check);
  
-    $row = mysql_fetch_row($check);
- 
-    if ($row[0] == 0)
+    if (!$num)
     {
         // Create a new record for this avatar note
-        $result = mysql_query("INSERT INTO profile_notes VALUES ".
-            "('". mysql_escape_string($uuid) ."',".
-            "'". mysql_escape_string($targetuuid) ."',".
-            "'". mysql_escape_string($notes) ."')");
+        $result = $osw->SQL->query("INSERT INTO `{$this->osw->config['profile_db']}`.profile_notes VALUES ('$uuid','$targetuuid','$notes')");
     }
-    else if ($notes == "")
+    else if ($notes)
     {
         // Delete the record for this avatar note
-        $result = mysql_query("DELETE FROM profile_notes WHERE ".
-            "useruuid = '". mysql_escape_string($uuid) ."' AND ".
-            "targetuuid = '". mysql_escape_string($targetuuid) ."'");
+        $result = $osw->SQL->query("DELETE FROM `{$this->osw->config['profile_db']}`.profile_notes WHERE useruuid = '$uuid' AND targetuuid = '$targetuuid'");
     }
     else
     {
         // Update the existing record
-        $result = mysql_query("UPDATE profile_notes SET ".
-            "notes = '". mysql_escape_string($notes) ."' WHERE ".
-            "useruuid = '". mysql_escape_string($uuid) ."' AND ".
-            "targetuuid = '". mysql_escape_string($targetuuid) ."'");
+        $result = $osw->SQL->query("UPDATE `{$this->osw->config['profile_db']}`.profile_notes SET notes = '$notes' WHERE useruuid = '$uuid' AND targetuuid = '$targetuuid'");
     }
  
     $response_xml = xmlrpc_encode(array(
         'success' => $result,
-        'errorMessage' => mysql_error()
+        'errorMessage' => 'MySQLi Error'
     ));
  
     print $response_xml;
@@ -451,8 +368,7 @@ function avatar_notes_update($method_name, $params, $app_data)
  
 # Profile bits
  
-xmlrpc_server_register_method($xmlrpc_server, "avatar_properties_request",
-        "avatar_properties_request");
+xmlrpc_server_register_method($xmlrpc_server, "avatar_properties_request", "avatar_properties_request");
  
 function avatar_properties_request($method_name, $params, $app_data)
 {
@@ -462,9 +378,8 @@ function avatar_properties_request($method_name, $params, $app_data)
  
     $uuid           = $req['avatar_id'];
  
-    $result = mysql_query("SELECT * FROM profile WHERE ".
-            "useruuid = '". mysql_escape_string($uuid) ."'");
-    $row = mysql_fetch_assoc($result);
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile WHERE useruuid = '$uuid'");
+    $row = $osw->SQL->fetch_array($result);
  
     if ($row != False)
     {
@@ -487,11 +402,8 @@ function avatar_properties_request($method_name, $params, $app_data)
     {
         //Insert empty record for avatar.
         //FIXME: Should this only be done when asking for ones own profile?
-        $sql = "INSERT INTO profile VALUES ( ".
-                "'". mysql_escape_string($uuid) ."', ".
-                "'$zeroUUID', 0, 0, '', 0, '', 0, '', '', ".
-                "'$zeroUUID', '', '$zeroUUID', '')";
-        $result = mysql_query($sql);
+        $sql = "INSERT INTO `{$this->osw->config['profile_db']}`.profile VALUES ('$uuid', '$zeroUUID', 0, 0, '', 0, '', 0, '', '', '$zeroUUID', '', '$zeroUUID', '')";
+        $result = $osw->SQL->query($sql);
  
         $data[] = array(
                 "ProfileUrl" => "",
@@ -516,8 +428,7 @@ function avatar_properties_request($method_name, $params, $app_data)
     print $response_xml;
 }
  
-xmlrpc_server_register_method($xmlrpc_server, "avatar_properties_update",
-        "avatar_properties_update");
+xmlrpc_server_register_method($xmlrpc_server, "avatar_properties_update", "avatar_properties_update");
  
 function avatar_properties_update($method_name, $params, $app_data)
 {
@@ -530,14 +441,7 @@ function avatar_properties_update($method_name, $params, $app_data)
     $firstlifeimage = $req['FirstLifeImage'];
     $firstlifetext  = $req['FirstLifeAboutText'];
  
-    $result=mysql_query("UPDATE profile SET ".
-            "profileURL='". mysql_escape_string($profileURL) ."', ".
-            "profileImage='". mysql_escape_string($image) ."', ".
-            "profileAboutText='". mysql_escape_string($abouttext) ."', ".
-            "profileFirstImage='". mysql_escape_string($firstlifeimage) ."', ".
-            "profileFirstText='". mysql_escape_string($firstlifetext) ."' ".
-            "WHERE useruuid='". mysql_escape_string($uuid) ."'"
-        );
+    $result=$osw->SQL->query("UPDATE `{$this->osw->config['profile_db']}`.profile SET profileURL='$profileURL', profileImage='$image', profileAboutText='$abouttext', profileFirstImage='$firstlifeimage', profileFirstText='$firstlifetext' WHERE useruuid='$uuid'");
  
     $response_xml = xmlrpc_encode(array(
         'success' => $result,
@@ -546,13 +450,11 @@ function avatar_properties_update($method_name, $params, $app_data)
  
     print $response_xml;
 }
- 
- 
+
 // Profile Interests
- 
-xmlrpc_server_register_method($xmlrpc_server, "avatar_interests_update",
-        "avatar_interests_update");
- 
+
+xmlrpc_server_register_method($xmlrpc_server, "avatar_interests_update", "avatar_interests_update");
+
 function avatar_interests_update($method_name, $params, $app_data)
 {
     $req            = $params[0];
@@ -564,14 +466,7 @@ function avatar_interests_update($method_name, $params, $app_data)
     $skillsmask     = $req['skillsmask'];
     $languages      = $req['languages'];
  
-    $result = mysql_query("UPDATE profile SET ".
-            "profileWantToMask = ". mysql_escape_string($wantmask) .",".
-            "profileWantToText = '". mysql_escape_string($wanttext) ."',".
-            "profileSkillsMask = ". mysql_escape_string($skillsmask) .",".
-            "profileSkillsText = '". mysql_escape_string($skillstext) ."',".
-            "profileLanguages = '". mysql_escape_string($languages) ."' ".
-            "WHERE useruuid = '". mysql_escape_string($uuid) ."'"
-        );
+    $result = $osw->SQL->query("UPDATE `{$this->osw->config['profile_db']}`.profile SET profileWantToMask = '$wantmask',profileWantToText = '$wanttext',profileSkillsMask = '$skillsmask',profileSkillsText = '$skillstext',profileLanguages = '$languages' WHERE useruuid = '$uuid'");
  
     $response_xml = xmlrpc_encode(array(
         'success' => True
@@ -582,8 +477,7 @@ function avatar_interests_update($method_name, $params, $app_data)
  
 // User Preferences
  
-xmlrpc_server_register_method($xmlrpc_server, "user_preferences_request",
-        "user_preferences_request");
+xmlrpc_server_register_method($xmlrpc_server, "user_preferences_request", "user_preferences_request");
  
 function user_preferences_request($method_name, $params, $app_data)
 {
@@ -591,10 +485,9 @@ function user_preferences_request($method_name, $params, $app_data)
  
     $uuid           = $req['avatar_id'];
  
-    $result = mysql_query("SELECT imviaemail,visible,email FROM profile_settings WHERE ".
-            "useruuid = '". mysql_escape_string($uuid) ."'");
+    $result = $osw->SQL->query("SELECT * FROM `{$this->osw->config['profile_db']}`.profile_settings WHERE useruuid = '$uuid'");
  
-    $row = mysql_fetch_assoc($result);
+    $row = $osw->SQL->fetch_array($result);
  
     if ($row != False)
     {
@@ -607,10 +500,8 @@ function user_preferences_request($method_name, $params, $app_data)
     {
         //Insert empty record for avatar.
         //NOTE: The 'false' values here are enums defined in database
-        $sql = "INSERT INTO profile_settings VALUES ".
-                "('". mysql_escape_string($uuid) ."', ".
-                "'false', 'false', '')";
-        $result = mysql_query($sql);
+        $sql = "INSERT INTO `{$this->osw->config['profile_db']}`.profile_settings VALUES ('$uuid', 'false', 'false', '')";
+        $result = $osw->SQL->query($sql);
  
         $data[] = array(
                 "imviaemail" => False,
@@ -626,8 +517,7 @@ function user_preferences_request($method_name, $params, $app_data)
     print $response_xml;
 }
  
-xmlrpc_server_register_method($xmlrpc_server, "user_preferences_update",
-        "user_preferences_update");
+xmlrpc_server_register_method($xmlrpc_server, "user_preferences_update", "user_preferences_update");
  
 function user_preferences_update($method_name, $params, $app_data)
 {
@@ -638,10 +528,7 @@ function user_preferences_update($method_name, $params, $app_data)
     $wantim         = $req['imViaEmail'];
     $directory      = $req['visible'];
  
-    $result = mysql_query("UPDATE profile_settings SET ".
-            "imviaemail = '".mysql_escape_string($wantim) ."', ".
-            "visible = '".mysql_escape_string($directory) ."' WHERE ".
-            "useruuid = '". mysql_escape_string($uuid) ."'");
+    $result = $osw->SQL->query("UPDATE `{$this->osw->config['profile_db']}`.profile_settings SET imviaemail = '$wantim', visible = '$directory' WHERE useruuid = '$uuid'");
  
     $response_xml = xmlrpc_encode(array(
         'success' => True,

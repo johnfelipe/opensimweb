@@ -21,8 +21,6 @@
  *
  * @author Anthony Le Mansec <a.lm@free.fr>
  */
-
-// The next 4 lines were added by Christopher Strachan for easier integration into OSW.
 define('OSW_IN_SYSTEM', true);
 require_once('../inc/headerless.php');
 $robusturl = $osw->config['loginURI'];
@@ -45,7 +43,7 @@ define('IMAGE_DEFAULT_FORMAT', 'JPEG');
 define('CACHE_MAX_AGE', 86400); // 1 day
 
 /* where to store cached pictures ? (user running your webserver needs write-permissions there : */
-define('JP2_CACHE_DIR', '/var/www/datas/webassets/cache/jp2/');
-define('PIC_CACHE_DIR', '/var/www/datas/webassets/cache/pic/');
+define('JP2_CACHE_DIR', '/var/www/webassets/cache/jp2/');
+define('PIC_CACHE_DIR', '/var/www/webassets/cache/pic/');
 
 ?>

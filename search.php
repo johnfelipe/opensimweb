@@ -123,7 +123,7 @@ echo "Test";
 <?php
 if ($type == "classifieds" || !$type) {
 	echo "<h3>Classifieds</h3>";
-$cq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.classifieds WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND creationdate < '$now' AND expirationdate > '$now' AND classifiedflags < '$m' ORDER BY 'creationdate' DESC LIMIT 0,100");
+$cq = $osw->SQL->query("SELECT * FROM `{$osw->config['profile_db']}`.classifieds WHERE name LIKE '%$search%' OR description LIKE '%$search%' AND creationdate < '$now' AND expirationdate > '$now' AND classifiedflags < '$m' ORDER BY 'creationdate' DESC LIMIT 0,100");
 while ($cn = $osw->SQL->fetch_array($cq)) {
 $creatoruuid = $cn['creatoruuid'];
 $creationdate = $cn['creationdate'];
@@ -423,7 +423,7 @@ $onoff = "offlinedot.png";
 $onoff = "onlinedot.png";
 }
 
-$profq = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.userprofile WHERE useruuid = '$uuid' AND profileMaturePublish < '$m'");
+$profq = $osw->SQL->query("SELECT * FROM `{$osw->config['profile_db']}`.userprofile WHERE useruuid = '$uuid' AND profileMaturePublish < '$m'");
 $prow = $osw->SQL->fetch_array($profq);
 
 $show = $prow['profileAllowPublish'];

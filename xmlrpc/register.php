@@ -10,41 +10,23 @@ $service = $osw->Security->make_safe($_GET['service']);
 if ($hostname != "" && $port != "" && $service == "online")
 {
     // Check if there is already a database row for this host
-    $checkhost = $osw->SQL->query("SELECT register FROM `{$this->osw->config['search_db']}`.hostsregister WHERE " .
-            "host = '" . mysql_escape_string($hostname) . "' AND " .
-            "port = '" . mysql_escape_string($port) . "'");
+    $checkhost = $osw->SQL->query("SELECT * FROM `{$this->osw->config['search_db']}`.hostsregister WHERE host = '$hostname' AND port = '$port'");
 
     // Get the request time as a timestamp for later
     $timestamp = $_SERVER['REQUEST_TIME'];
 
     // if greater than 1, check the nextcheck date
-    if ($osw->SQL->num_rows($checkhost) > 0)
+    if ($osw->SQL->num_rows($checkhost) >= 0)
     {
-        $update = "UPDATE `{$this->osw->config['search_db']}`.hostsregister SET " .
-                "register = '" . mysql_escape_string($timestamp) . "', " . 
-                "nextcheck = '0', checked = '0', " .
-                "failcounter = '0' " .  
-                "WHERE host = '" . mysql_escape_string($hostname) . "' AND " .
-                "port = '" . mysql_escape_string($port) . "'";
-
-        $runupdate = $osw->SQL->query($update);
+        $runupdate = $osw->SQL->query("UPDATE `{$this->osw->config['search_db']}`.hostsregister SET register = '$timestamp', nextcheck = '0', checked = '0', failcounter = '0' WHERE host = '$hostname' AND port = '$port'");
     }
     else
     {
-        $register = "INSERT INTO `{$this->osw->config['search_db']}`.hostsregister VALUES ".
-                    "('" . mysql_escape_string($hostname) . "', " .
-                    "'" . mysql_escape_string($port) . "', " .
-                    "'" . mysql_escape_string($timestamp) . "', 0, 0, 0)";
-
-        $runupdate = $osw->SQL->query($register);
+        $runupdate = $osw->SQL->query("INSERT INTO `{$this->osw->config['search_db']}`.hostsregister VALUES ('$hostname', '$port', '$timestamp', 0, 0, 0)");
     }
 }
 elseif ($hostname != "" && $port != "" && $service = "offline")
 {
-        $delete = "DELETE FROM `{$this->osw->config['search_db']}`.hostsregister " .
-                "WHERE host = '" . mysql_escape_string($hostname) . "' AND " .
-                "port = '" . mysql_escape_string($port) . "'";
-
-        $rundelete = $osw->SQL->query($delete);
+        $rundelete = $osw->SQL->query("DELETE FROM `{$this->osw->config['search_db']}`.hostsregister WHERE host = '$hostname' AND port = '$port'");
 }
 ?>

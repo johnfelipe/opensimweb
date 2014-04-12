@@ -31,16 +31,17 @@ function CheckHost($hostname, $port)
     global $now;
 
     $xml = GetURL($hostname, $port, "?method=collector");
-    if ($xml == "")	//No data was retrieved? (CURL may have timed out)
+    if ($xml == "") {	//No data was retrieved? (CURL may have timed out)
         $failcounter = "failcounter + 1";
-    else
+    }else{
         $failcounter = "0";
+    }
 
     //Update nextcheck to be 10 minutes from now. The current OS instance
     //won't be checked again until at least this much time has gone by.
     $next = $now + 600;
 
-    $osw->SQL->query("UPDATE hostsregister SET nextcheck = '$next', checked = '1', failcounter = '$failcounter'  WHERE host = '$hostname' AND port = '$port'");
+    $osw->SQL->query("UPDATE `{$osw->config['search_db']}`.hostsregister SET nextcheck = '$next', checked = '1', failcounter = '$failcounter'  WHERE host = '$hostname' AND port = '$port'");
 
     if ($xml != "") 
         parse($hostname, $port, $xml);
@@ -83,7 +84,7 @@ function parse($hostname, $port, $xml)
     $expire = $regiondata->getElementsByTagName("expire")->item(0)->nodeValue;
     $next = $now + $expire;
 
-    $updater = $osw->SQL->query("UPDATE hostsregister SET nextcheck = '$next' WHERE host = '$hostname' AND port = '$port'");
+    $updater = $osw->SQL->query("UPDATE `{$osw->config['search_db']}`.hostsregister SET nextcheck = '$next' WHERE host = '$hostname' AND port = '$port'");
 
     //
     // Get the region data to be saved in the database
@@ -110,15 +111,15 @@ function parse($hostname, $port, $xml)
         //
         // First, check if we already have a region that is the same
         //
-        $check = $osw->SQL->query("SELECT * FROM regions WHERE regionuuid = '$regionuuid'");
+        $check = $osw->SQL->query("SELECT * FROM `{$osw->config['search_db']}`.regions WHERE regionuuid = '$regionuuid'");
 
-        if (mysql_num_rows($check) > 0)
+        if ($osw->SQL->num_rows($check) > 0)
         {
-            $osw->SQL->query("DELETE FROM regions WHERE regionuuid = '$regionuuid'");
-            $osw->SQL->query("DELETE FROM parcels WHERE regionuuid = '$regionuuid'");
-            $osw->SQL->query("DELETE FROM allparcels WHERE regionUUID = '$regionuuid'");
-            $osw->SQL->query("DELETE FROM parcelsales WHERE regionUUID = '$regionuuid'");
-            $osw->SQL->query("DELETE FROM objects WHERE regionuuid = '$regionuuid'");
+            $osw->SQL->query("DELETE FROM `{$osw->config['search_db']}`.regions WHERE regionuuid = '$regionuuid'");
+            $osw->SQL->query("DELETE FROM `{$osw->config['search_db']}`.parcels WHERE regionuuid = '$regionuuid'");
+            $osw->SQL->query("DELETE FROM `{$osw->config['search_db']}`.allparcels WHERE regionUUID = '$regionuuid'");
+            $osw->SQL->query("DELETE FROM `{$osw->config['search_db']}`.parcelsales WHERE regionUUID = '$regionuuid'");
+            $osw->SQL->query("DELETE FROM `{$osw->config['search_db']}`.objects WHERE regionuuid = '$regionuuid'");
         }
 
         $data = $region->getElementsByTagName("data")->item(0);
@@ -132,9 +133,8 @@ function parse($hostname, $port, $xml)
         //
         // Second, add the new info to the database
         //
-        $sql = "INSERT INTO regions VALUES('$regionname','$regionuuid','$regionhandle','$url','$username','$useruuid')";
 
-        $osw->SQL->query($sql);
+        $osw->SQL->query("INSERT INTO `{$osw->config['search_db']}`.regions VALUES('$regionname','$regionuuid','$regionhandle','$url','$username','$useruuid')");
 
         //
         // Start reading the parcel info
@@ -190,20 +190,20 @@ function parse($hostname, $port, $xml)
             //
             // Save
             //
-            $sql = "INSERT INTO allparcels VALUES('$regionuuid','$parcelname','$owneruuid','$groupuuid','$parcellanding','$parceluuid','$infouuid','$parcelarea' )";
+            $sql = "INSERT INTO `{$osw->config['search_db']}`.allparcels VALUES('$regionuuid','$parcelname','$owneruuid','$groupuuid','$parcellanding','$parceluuid','$infouuid','$parcelarea' )";
 
             $osw->SQL->query($sql);
 
             if ($parceldirectory == "true")
             {
-                $sql = "INSERT INTO parcels VALUES('$regionuuid','$parcelname','$parceluuid','$parcellanding','$parceldescription','$parcelcategory','$parcelbuild','$parcelscript','$parcelpublic','$dwell','$infouuid','$regioncategory')";
+                $sql = "INSERT INTO `{$osw->config['search_db']}`.parcels VALUES('$regionuuid','$parcelname','$parceluuid','$parcellanding','$parceldescription','$parcelcategory','$parcelbuild','$parcelscript','$parcelpublic','$dwell','$infouuid','$regioncategory')";
 
                 $osw->SQL->query($sql);
             }
 
             if ($parcelforsale == "true")
             {
-                $sql = "INSERT INTO parcelsales VALUES('$regionuuid','$parcelname','$parceluuid','$parcelarea','$parcelsaleprice','$parcellanding','$infouuid', '$dwell', '$estateid', '$regioncategory')";
+                $sql = "INSERT INTO `{$osw->config['search_db']}`.parcelsales VALUES('$regionuuid','$parcelname','$parceluuid','$parcelarea','$parcelsaleprice','$parcellanding','$infouuid', '$dwell', '$estateid', '$regioncategory')";
 
                 $osw->SQL->query($sql);
             }
@@ -235,7 +235,7 @@ function parse($hostname, $port, $xml)
     }
 }
 
-$sql = "SELECT host, port FROM hostsregister WHERE nextcheck < $now AND checked = 0 LIMIT 0,10";
+$sql = "SELECT host, port FROM `{$osw->config['search_db']}`.hostsregister WHERE nextcheck < $now AND checked = 0 LIMIT 0,10";
 
 $jobsearch = $osw->SQL->query($sql);
 
@@ -246,7 +246,7 @@ $jobsearch = $osw->SQL->query($sql);
 //
 if ($osw->SQL->num_rows($jobsearch) == 0)
 {
-    $osw->SQL->query("UPDATE hostsregister SET checked = 0");
+    $osw->SQL->query("UPDATE `{$osw->config['search_db']}`.hostsregister SET checked = '0'");
     $jobsearch = $osw->SQL->query($sql);
 }
 

@@ -114,16 +114,6 @@ CREATE TABLE `objects` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Table structure for offline_im
--- ----------------------------
-DROP TABLE IF EXISTS `offline_im`;
-CREATE TABLE `offline_im` (
-  `uuid` varchar(36) NOT NULL,
-  `message` text NOT NULL,
-  KEY `uuid` (`uuid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- ----------------------------
 -- Table structure for parcels
 -- ----------------------------
 DROP TABLE IF EXISTS `parcels`;

@@ -51,11 +51,14 @@
 		</ul>
 		<!-- This shouldnt be in a menu since its part of the system. -->
 		<ul class="nav navbar-nav navbar-right">
-			<?php if ($user) { ?>
+			<?php
+      if ($user_uuid) {
+        $userproflink = str_replace(" ", ".", $user);
+      ?>
 			<li class="dropdown">
 				<a href='#' class="dropdown-toggle" data-toggle="dropdown"><?php echo $user; ?> <b class='caret'></b></a>
 				<ul class="dropdown-menu">
-					<li><a href='<?php echo $site_address; ?>/profile.php?u=<?php echo $user_first.".".$user_last;?>'>Profile</a></li>
+					<li><a href='<?php echo $site_address; ?>/profile.php?u=<?php echo $userproflink;?>'>Profile</a></li>
           <li class="divider"></li>
           <?php
           if ($osw->grid->isAdmin($user_uuid)) {
@@ -68,7 +71,7 @@
 				</ul>
 			<li>
 			<?php }else{ ?>
-			<li><a href='<?php echo $site_address; ?>/login.php'>Login</a></li>
+			<li><a href='<?php echo $site_address; ?>/login.php?lp=<?php echo $thispage; ?>'>Login</a></li>
 			<li><a href='<?php echo $site_address; ?>/register.php'>Register</a></li>
 			<?php } ?>
 		</ul>

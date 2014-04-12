@@ -50,11 +50,14 @@ var $osw;
 	}
 
 	function login($user, $pass, $remember) {
-		$explode = explode(" ", $user);
-		$firstname = $explode[0];
-		$lastname = $explode[1];
-		if (!$lastname) {
+		$strpos = strpos($user, " ");
+		if ($strpos === false) {
+			$firstname = $user;
 			$lastname = "Resident";
+		}else{
+			$explode = explode(" ", $user);
+			$firstname = $explode[0];
+			$lastname = $explode[1];
 		}
 
 		$q1 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$firstname' AND LastName = '$lastname'");
@@ -62,17 +65,11 @@ var $osw;
 		if ($n1) {
 			$r1 = $this->osw->SQL->fetch_array($q1);
 			$userUUID = $r1['PrincipalID'];
-			$userLevel = $r1['UserLevel'];
 
 			$q2 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.auth WHERE UUID = '$userUUID'");
 			$r2 = $this->osw->SQL->fetch_array($q2);
 			$user_pass = $r2['passwordHash'];
 			$user_code = $r2['passwordSalt'];
-
-			$q3 = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE UserID = '$userUUID'");
-			$user_info = $this->osw->SQL->fetch_array($q3);
-			$user_info['level'] = $userLevel;
-			$user_info['username'] = $firstname." ".$lastname;
 
 			$time = time();
 

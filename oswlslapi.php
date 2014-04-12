@@ -1,9 +1,9 @@
 <?php
-define('QUADODO_IN_SYSTEM', true);
-require_once('includes/headerless.php');
+define('OSW_IN_SYSTEM', true);
+require_once('inc/headerless.php');
 
-$t = $qls->Security->make_safe($_GET['t']);
-$u = $qls->Security->make_safe($_GET['u']);
+$t = $osw->Security->make_safe($_GET['t']);
+$u = $osw->Security->make_safe($_GET['u']);
 
 if ($t == "usercounts") {
 $onlineq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.GridUser WHERE Online = 'TRUE'");
@@ -16,7 +16,7 @@ $monthago = $now - 2592000;
 $latestq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.GridUser WHERE Login > '$monthago'");
 $latestc = $osw->SQL->num_rows($latestq);
 
-$regionq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.Regions");
+$regionq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.regions");
 $regionc = $osw->SQL->num_rows($regionq);
 echo $online."~".$totalc."~".$latestc."~".$regionc;
 }
@@ -32,13 +32,13 @@ if ($t == "destinations") {
 }
 
 if ($t == "profile") {
-	$userexplode = explode("%20", $u);
+	$userexplode = explode(" ", $u);
 	$first = $userexplode[0];
 	$last = $userexplode[1];
 	if (!$last) {
 		$last = "Resident";
 	}
-	$uq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.useraccounts WHERE FirstName = '$first' AND LastName = '$last'");
+	$uq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$first' AND LastName = '$last'");
 	$ur = $osw->SQL->fetch_array($uq);
 	$uuid = $ur['PrincipalID'];
 	$profq = $osw->SQL->query("SELECT * FROM `{$osw->config['profile_db']}`.userprofile WHERE useruuid = '$uuid'");
@@ -56,7 +56,10 @@ if ($t == "profile") {
 	$rlpic = $r['profileFirstImage'];
 	$realaboutme = $r['profileFirstText'];
 	$uname = $first." ".$last;
-	$array = $uuid."~".$flpic."~".$fakeaboutme."~".$rlpic."~".$realaboutme."~".$partner."~".$url."~".$uname;
+	if (!$partner || $partner == "00000000-0000-0000-0000-000000000000") {
+		$partner = "No one";
+	}
+	echo $uuid."~".$flpic."~".$fakeaboutme."~".$rlpic."~".$realaboutme."~".$partner."~".$url."~".$uname;
 }
 
 // For examples for this API system please see oswapilsl.lsl included with OSW
