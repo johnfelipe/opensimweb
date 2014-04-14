@@ -59,6 +59,7 @@
 				<a href='#' class="dropdown-toggle" data-toggle="dropdown"><?php echo $user; ?> <b class='caret'></b></a>
 				<ul class="dropdown-menu">
 					<li><a href='<?php echo $site_address; ?>/profile.php?u=<?php echo $userproflink;?>'>Profile</a></li>
+          <li><a href='<?php echo $site_address; ?>/logout.php'>Logout</a></li>
           <li class="divider"></li>
           <?php
           if ($osw->grid->isAdmin($user_uuid)) {

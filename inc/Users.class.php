@@ -95,9 +95,8 @@ var $osw;
 	function logout_user() {
 	    $session_names = array('id', 'time', 'code');
 	    $ses_uuid = $_SESSION[$this->osw->config['cookie_prefix'] . 'id'];
-	    $ses_code = $_SESSION[$this->osw->config['cookie_prefix'] . 'code'];
 		if (isset($ses_code)) {
-            $this->osw->SQL->query("DELETE FROM `{$this->osw->config['db_prefix']}sessions` WHERE code = '$ses_code'");
+            $this->osw->SQL->query("DELETE FROM `{$this->osw->config['db_prefix']}sessions` WHERE id = '$ses_uuid'");
 		}
         $_SESSION = array();
 
@@ -107,11 +106,10 @@ var $osw;
 
 		if (isset($_COOKIE[$this->osw->config['cookie_prefix'] . 'id'])) {
 			foreach ($session_names as $value) {
-			    setcookie($this->osw->config['cookie_prefix'] . $value, 0, time() - 3600, $this->osw->config['cookie_path'], $this->osw->config['cookie_domain']);
+			    setcookie($this->osw->config['cookie_prefix'] . $value, 0, time() - 3600, $this->osw->config['cookie_path'], $this->osw->config['cookie_domain'], false, false);
 			}
 		}
-
-	    $this->osw->redirect($this->osw->config['logout_redirect']);
+		return true;
 	}
 
 	function check_user_exist($first, $last) {
