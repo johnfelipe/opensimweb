@@ -25,7 +25,7 @@ $latestc = $osw->SQL->num_rows($latestq);
 
 $regionq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.regions");
 $regionc = $osw->SQL->num_rows($regionq);
-$array =  array("ONLINE"=>$online,"TOTALUSERS"=>$totalc,"RECENTJOINS"=>$latestc,"REGIONS"=>$regionc);
+$array =  array('ONLINE' => $online, 'TOTALUSERS' => $totalc, 'RECENTJOINS' => $latestc, 'REGIONS' => $regionc);
 echo json_encode($array);
 }
 
@@ -46,7 +46,7 @@ if ($t == "profile") {
 	if (!$last) {
 		$last = "Resident";
 	}
-	$uq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.useraccounts WHERE FirstName = '$first' AND LastName = '$last'");
+	$uq = $osw->SQL->query("SELECT * FROM `{$osw->config['robust_db']}`.UserAccounts WHERE FirstName = '$first' AND LastName = '$last'");
 	$ur = $osw->SQL->fetch_array($uq);
 	$uuid = $ur['PrincipalID'];
 	$profq = $osw->SQL->query("SELECT * FROM `{$osw->config['profile_db']}`.userprofile WHERE useruuid = '$uuid'");

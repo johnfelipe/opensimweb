@@ -95,6 +95,8 @@ if ($site_logo) {
 <style>
 body {
 	padding-top: 70px;
+	padding-left: 25px;
+	padding-right: 25px;
 	padding-bottom: 70px;
 }
 </style>
@@ -102,9 +104,11 @@ body {
 <?php
 if ($site_banner) {
 	echo "<img src='" . $site_banner . "' border='0'>";
+}else if (!$site_banner) {
 }
+
 if ($nomenu == "true") {
-}else{
+}else if (!$nomenu) {
 include ('menu.php');
 }
 

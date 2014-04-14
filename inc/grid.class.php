@@ -40,16 +40,20 @@ var $osw;
 	return $r;
 	}
 
-	function regionname($UUID) {
+	function regioninfo($UUID) {
 	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Regions WHERE uuid = '$UUID'");
 	$r = $this->osw->SQL->fetch_array($q);
+	return $r;
+	}
+
+	function regionname($UUID) {
+	$r = $this->regioninfo($UUID);
 	$r3 = $r['regionName'];
 	return $r3;
 	}
 
 	function regionip($UUID) {
-	$q = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.Regions WHERE uuid = '$UUID'");
-	$r = $this->osw->SQL->fetch_array($q);
+	$r = $this->regioninfo($UUID);
 	$r4 = $r['serverIP'];
 	return $r4;
 	}
@@ -212,6 +216,34 @@ var $osw;
 			$return = false;
 		}
 		return $return;
+	}
+
+	function gridstatus() {
+		$onlineq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE Online = 'TRUE'");
+		$online = $this->osw->SQL->num_rows($onlineq);
+
+		$totalq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.UserAccounts");
+		$totaluser = $this->osw->SQL->num_rows($totalq);
+
+		$monthago = $now - 2592000;
+		$latestq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.GridUser WHERE Login > '$monthago'");
+		$latest = $this->osw->SQL->num_rows($latestq);
+
+		$regionq = $this->osw->SQL->query("SELECT * FROM `{$this->osw->config['robust_db']}`.regions");
+		$regions = $this->osw->SQL->num_rows($regionq);
+
+		if ($this->gridonline()) {
+			$gonline = "<font color='Green'>Online</font>";
+		}else{
+			$gonline = "<font color='Red'>Offline</font>";
+		}
+
+		$gridstatus = "<span class='nowrap'><strong>Users in World:</strong> ".$online."</span><br>
+				<span class='nowrap'><strong>Regions:</strong> ".$regions."</span><br>
+				<span class='nowrap'><strong>Total Users:</strong> ".$totaluser."</span><br>
+				<span class='nowrap'><strong>Active Users (Last 30 Days):</strong> ".$latest."</span>
+				<span class='nowrap'><strong>Grid is ".$gonline." </strong></span>";
+	return $gridstatus;
 	}
 
 	function senddata($Host, $PostData) {

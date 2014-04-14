@@ -61,10 +61,11 @@ if (!$search) {
   			<div class="col-md-2">
 				<div class='panel'>
 					<div class="panel-body">
-							<B>Category</B><br>
+						<B>Category</B><br>
+						<ul class="nav nav-pills nav-stacked" style="max-width: 250px;">
 							<?php
 							if ($isCat) {
-								echo "<a href='index.php?cat=all&search=".$search."'>All categories</a><br><B>".$cat."</B><br>";
+								echo "<li><a href='index.php?cat=all&search=".$search."'>Back to ".$cat."</a></li>";
 							}
 							$catq = $osw->SQL->query("SELECT * FROM `{$osw->config['db_prefix']}market_category` WHERE childof = '$cat' ORDER BY `name` ASC LIMIT 0,50");
 							while ($catr = $osw->SQL->fetch_array($catq)){
@@ -72,9 +73,15 @@ if (!$search) {
 								$uppercap = ucfirst($catname);
 								$prodcountq = $osw->SQL->query("SELECT * FROM `{$osw->config['db_prefix']}market_products` WHERE cat = '$catname'");
 								$prodcountc = $osw->SQL->num_rows($prodcountq);
-								echo "<a href='index.php?cat=".$catname."'>".$uppercap."</a><span class='pull-right'>".$prodcountc."</span><br>";
+								if ($catname == $cat) {
+									$catactive = "class='active'";
+								}else if ($catname != $cat) {
+									$catactive = "";
+								}
+								echo "<li $catactive><a href='index.php?cat=".$catname."'><B>".$uppercap."</B> (".$prodcountc.")</a></li>";
 							}
   							?>
+  						</ul>
 					</div>
 				</div>
 			</div>

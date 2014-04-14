@@ -71,5 +71,18 @@ SCRIPT;
 			mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 		return $UUID;
 	}
+
+	function RESTget($address) {
+		$address = str_replace("http://", "", $address);
+		$port = 80;
+		//$return = $address.":".$port;
+		$fp = @fsockopen($address, $port, $errno, $errstr, 10);
+		if ($fp) {
+			$return = fgets($fp);
+		}else{
+			$return = "ERROR: ".$errno." - ".$errstr."<br />\n";
+		}
+		return $return;
+	}
 }
 ?>
