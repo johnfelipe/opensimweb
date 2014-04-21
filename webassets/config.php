@@ -21,12 +21,6 @@
  *
  * @author Anthony Le Mansec <a.lm@free.fr>
  */
-define('OSW_IN_SYSTEM', true);
-require_once('../inc/headerless.php');
-$robusturl = $osw->config['loginURI'];
-$asset_address = $robusturl."/assets/";
-
-define('ASSET_SERVER', $asset_address); // (OpenSim.ini: asset_server_url . "/assets/")
 define('ASSET_SERVER_TIMEOUT', 8); // timeout in seconds, to wait while requesting an asset (default to 8)
 define('ASSET_DO_RESIZE', true); // shall we resize picture to width=ASSET_RESIZE_FIXED_WIDTH ?
 define('ASSET_RESIZE_FIXED_WIDTH', 150); // width in pixels

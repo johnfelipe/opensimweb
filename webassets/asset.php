@@ -1,4 +1,11 @@
 <?php
+define('OSW_IN_SYSTEM', true);
+require_once('../inc/headerless.php');
+$robusturl = $osw->config['loginURI'];
+$asset_address = $robusturl."/assets/";
+
+define('ASSET_SERVER', $asset_address); // (OpenSim.ini: asset_server_url . "/assets/")
+
 /*
  *  This file is part of WebAssets for OpenSimulator.
  *
@@ -37,6 +44,8 @@ $asset_datas = asset_get($asset_id, $format);
 
 // TODO : set an array of mime types according to 'format' arg
 Header("Content-type: image/jpg");
+Header("Content-type: image/png");
+Header("Content-type: image/gif");
 echo $asset_datas;
 
 ?>
